@@ -35,10 +35,8 @@ import AlternativeFormPage from './pages/alternatives/AlternativeFormPage';
 import PriceList from './pages/prices/PriceList';
 import PriceFormPage from './pages/prices/PriceFormPage';
 
-// Search, Profile, Settings
+// Search
 import SearchResults from './pages/search/SearchResults';
-import Profile from './pages/Profile';
-import Settings from './pages/Settings';
 
 const router = createBrowserRouter([
   {
@@ -89,9 +87,6 @@ const router = createBrowserRouter([
 
       // Search — uses: GET /brands/by-ndc/{ndc}, GET /brands/by-barcode/{barcode}, GET /generics/ + GET /brands/
       { path: 'search', element: <SearchResults /> },
-
-      { path: 'profile', element: <Profile /> },
-      { path: 'settings', element: <Settings /> },
     ],
   },
 ]);

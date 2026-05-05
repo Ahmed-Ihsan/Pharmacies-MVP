@@ -86,7 +86,7 @@ export default function GenericForm({
   };
 
   return (
-    <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl p-6 shadow-sm">
+    <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl p-6 shadow-[var(--shadow-sm)]">
       <div className="flex items-center gap-3 mb-6">
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-2 rounded-lg">
           <Pill className="h-5 w-5 text-white" />

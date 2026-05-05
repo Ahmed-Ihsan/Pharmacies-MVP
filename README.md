@@ -92,6 +92,10 @@ Once running, access the auto-generated documentation:
 
 ## API Endpoints
 
+For complete API documentation with all endpoints, request/response schemas, and examples, see **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)**
+
+### Quick Reference
+
 | Resource | Endpoints |
 |----------|-----------|
 | **Therapeutic Classes** | `GET /api/v1/therapeutic-classes` (list, search) |

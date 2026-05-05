@@ -59,7 +59,7 @@ export default function ManufacturerDetail() {
   const isActive = data.is_active !== false && data.status !== 'inactive';
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
       {/* Delete Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
@@ -81,32 +81,32 @@ export default function ManufacturerDetail() {
         </DialogContent>
       </Dialog>
 
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
           <Link to="/manufacturers">
-            <button className="w-10 h-10 rounded-xl bg-[hsl(var(--muted))] hover:bg-[hsl(var(--accent))] flex items-center justify-center transition-colors">
+            <button className="w-10 h-10 rounded-lg bg-[hsl(var(--muted))] hover:bg-[hsl(var(--accent))] flex items-center justify-center transition-colors">
               <ArrowRight className="h-5 w-5 text-[hsl(var(--foreground))]" />
             </button>
           </Link>
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center shadow-lg shadow-violet-500/30">
+          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(270_70%_40%)] flex items-center justify-center shadow-[var(--shadow-md)]">
             <Building2 className="h-7 w-7 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-[hsl(var(--foreground))]">{name}</h1>
-            {data.arabic_name && <p className="text-[hsl(var(--muted-foreground))] text-sm mt-0.5">{data.arabic_name}</p>}
+            <h1 className="text-2xl font-bold text-[hsl(var(--foreground))]">{name}</h1>
+            {data.arabic_name && <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">{data.arabic_name}</p>}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Link to={`/manufacturers/${mId}/edit`}>
-            <Button variant="outline" className="gap-2 rounded-xl">
+            <Button variant="outline" className="gap-2">
               <Edit2 className="h-4 w-4" />
               تعديل
             </Button>
           </Link>
           <Button
             variant="danger"
-            className="gap-2 rounded-xl"
+            className="gap-2"
             onClick={() => setDeleteDialogOpen(true)}
           >
             <Trash2 className="h-4 w-4" />
@@ -117,9 +117,9 @@ export default function ManufacturerDetail() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Info Card */}
-        <div className="bg-white rounded-2xl border border-[hsl(var(--border))] shadow-sm p-6 space-y-5">
+        <div className="bg-[hsl(var(--card))] rounded-xl border border-[hsl(var(--border))] shadow-[var(--shadow-sm)] p-6 space-y-5">
           <h2 className="font-semibold text-[hsl(var(--foreground))] flex items-center gap-2 pb-3 border-b border-[hsl(var(--border))]">
-            <Building2 className="h-4 w-4 text-violet-500" />
+            <Building2 className="h-4 w-4 text-[hsl(var(--primary))]" />
             معلومات الشركة
           </h2>
 
@@ -133,8 +133,8 @@ export default function ManufacturerDetail() {
             const Icon = item.icon;
             return (
               <div key={item.label} className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Icon className="h-4 w-4 text-violet-600" />
+                <div className="h-8 w-8 rounded-lg bg-[hsl(var(--primary)/0.1)] flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Icon className="h-4 w-4 text-[hsl(var(--primary))]" />
                 </div>
                 <div>
                   <p className="text-xs text-[hsl(var(--muted-foreground))]">{item.label}</p>
@@ -147,13 +147,13 @@ export default function ManufacturerDetail() {
           })}
 
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <Calendar className="h-4 w-4 text-violet-600" />
+            <div className="h-8 w-8 rounded-lg bg-[hsl(var(--primary)/0.1)] flex items-center justify-center flex-shrink-0 mt-0.5">
+              <Calendar className="h-4 w-4 text-[hsl(var(--primary))]" />
             </div>
             <div>
               <p className="text-xs text-[hsl(var(--muted-foreground))]">الحالة</p>
-              <span className={`inline-flex items-center gap-1.5 mt-1 px-2.5 py-1 rounded-full text-xs font-medium ${isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-green-500' : 'bg-slate-400'}`} />
+              <span className={`inline-flex items-center gap-1.5 mt-1 px-2.5 py-1 rounded-full text-xs font-medium ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-slate-400'}`} />
                 {isActive ? 'نشط' : 'غير نشط'}
               </span>
             </div>
@@ -168,12 +168,12 @@ export default function ManufacturerDetail() {
         </div>
 
         {/* Brands Card */}
-        <div className="bg-white rounded-2xl border border-[hsl(var(--border))] shadow-sm p-6">
+        <div className="bg-[hsl(var(--card))] rounded-xl border border-[hsl(var(--border))] shadow-[var(--shadow-sm)] p-6">
           <h2 className="font-semibold text-[hsl(var(--foreground))] flex items-center gap-2 pb-3 border-b border-[hsl(var(--border))] mb-4">
-            <Tag className="h-4 w-4 text-violet-500" />
+            <Tag className="h-4 w-4 text-[hsl(var(--primary))]" />
             الأدوية التجارية
             {data.brands && (
-              <span className="mr-auto bg-violet-100 text-violet-700 text-xs font-bold px-2.5 py-0.5 rounded-full">
+              <span className="mr-auto bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] text-xs font-bold px-2.5 py-0.5 rounded-full">
                 {data.brands.length}
               </span>
             )}
@@ -185,10 +185,10 @@ export default function ManufacturerDetail() {
                 <Link
                   key={brand.id}
                   to={`/brands/${brand.id}`}
-                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-violet-50 border border-transparent hover:border-violet-200 transition-all group"
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-[hsl(var(--accent))] border border-transparent hover:border-[hsl(var(--border))] transition-all group"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-violet-100 group-hover:bg-violet-600 flex items-center justify-center flex-shrink-0 transition-colors">
-                    <Package className="h-4 w-4 text-violet-600 group-hover:text-white transition-colors" />
+                  <div className="h-8 w-8 rounded-lg bg-[hsl(var(--primary)/0.1)] group-hover:bg-[hsl(var(--primary))] flex items-center justify-center flex-shrink-0 transition-colors">
+                    <Package className="h-4 w-4 text-[hsl(var(--primary))] group-hover:text-white transition-colors" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-[hsl(var(--foreground))] truncate">{brand.name}</p>
@@ -201,7 +201,7 @@ export default function ManufacturerDetail() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-10 text-center">
-              <div className="w-14 h-14 rounded-full bg-[hsl(var(--muted))] flex items-center justify-center mb-3">
+              <div className="h-14 w-14 rounded-full bg-[hsl(var(--muted))] flex items-center justify-center mb-3">
                 <Package className="h-7 w-7 text-[hsl(var(--muted-foreground))]" />
               </div>
               <p className="text-sm text-[hsl(var(--muted-foreground))]">لا توجد أدوية تجارية مرتبطة</p>

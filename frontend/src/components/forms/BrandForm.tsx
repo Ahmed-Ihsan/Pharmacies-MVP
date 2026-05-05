@@ -164,7 +164,7 @@ export default function BrandForm({
   );
 
   return (
-    <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl p-8 shadow-sm">
+    <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl p-8 shadow-[var(--shadow-sm)]">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8 pb-6 border-b border-[hsl(var(--border))]">
         <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-3 rounded-xl shadow-lg">

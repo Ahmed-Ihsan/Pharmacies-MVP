@@ -44,30 +44,31 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       
       <aside
         className={cn(
-          "fixed lg:static inset-y-0 right-0 z-40 w-64 bg-[hsl(var(--card))] border-l border-[hsl(var(--border))] transition-transform duration-300 ease-in-out",
-          isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
+          "fixed lg:static inset-y-0 right-0 z-40 w-64 transition-transform duration-200 ease-in-out",
+          isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0",
+          "bg-[hsl(var(--card))] border-l border-[hsl(var(--border))]",
+          "flex flex-col",
+          "shadow-[var(--shadow-md)]"
         )}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-[hsl(var(--border))]">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary))]/70 flex items-center justify-center shadow-lg">
-                <Activity className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-[hsl(var(--foreground))]">
-                  نظام إدارة الأدوية
-                </h1>
-                <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                  Pharmacy Management
-                </p>
-              </div>
+          <div className="h-16 px-5 flex items-center gap-3 border-b border-[hsl(var(--border))] shrink-0">
+            <div className="h-9 w-9 rounded-lg bg-[hsl(var(--primary))] flex items-center justify-center shadow-sm">
+              <Activity className="h-4.5 w-4.5 text-white" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-[hsl(var(--foreground))] truncate leading-tight">
+                نظام إدارة الأدوية
+              </p>
+              <p className="text-[11px] text-[hsl(var(--muted-foreground))] leading-tight">
+                Pharmacy Management
+              </p>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
             {navigation.map((item) => (
               <NavLink
                 key={item.name}
@@ -75,37 +76,32 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 onClick={onClose}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200',
-                    'hover:bg-[hsl(var(--accent))] hover:shadow-sm',
+                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 relative',
+                    'cursor-pointer select-none',
                     isActive
-                      ? 'bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary))]/90 text-white shadow-md'
-                      : 'text-[hsl(var(--muted-foreground))]'
+                      ? 'bg-[hsl(var(--primary)/0.08)] text-[hsl(var(--primary))] font-semibold'
+                      : 'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--foreground))]'
                   )
                 }
               >
-                <item.icon className="h-5 w-5" />
-                {item.name}
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <span className="absolute right-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[hsl(var(--primary))] rounded-l-full" />
+                    )}
+                    <item.icon className={cn("h-4.5 w-4.5 shrink-0", isActive ? "text-[hsl(var(--primary))]" : "")} />
+                    <span>{item.name}</span>
+                  </>
+                )}
               </NavLink>
             ))}
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-[hsl(var(--border))]">
-            <div className="bg-gradient-to-r from-[hsl(var(--muted))] to-[hsl(var(--muted))]/50 rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center">
-                  <Activity className="h-4 w-4 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-[hsl(var(--foreground))]">
-                    الإصدار 1.0.0
-                  </p>
-                  <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                    جميع الحقوق محفوظة © 2025
-                  </p>
-                </div>
-              </div>
-            </div>
+          <div className="px-5 py-3.5 border-t border-[hsl(var(--border))] shrink-0">
+            <p className="text-[11px] text-[hsl(var(--muted-foreground))] text-center">
+              © 2025 نظام إدارة الأدوية
+            </p>
           </div>
         </div>
       </aside>

@@ -119,7 +119,7 @@ export default function PriceFormPage() {
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Link to="/prices">
-            <button className="w-12 h-12 rounded-2xl bg-white/80 backdrop-blur-sm hover:bg-white/90 shadow-lg shadow-emerald-500/10 flex items-center justify-center transition-all duration-300 hover:-translate-y-0.5">
+            <button className="w-12 h-12 rounded-2xl bg-white/80 hover:bg-white/90 shadow-lg shadow-emerald-500/10 flex items-center justify-center transition-all duration-300">
               <ArrowRight className="h-5 w-5 text-emerald-600" />
             </button>
           </Link>
@@ -136,7 +136,7 @@ export default function PriceFormPage() {
 
         {/* Active price reference banner */}
         {activePrice && !isEdit && (
-          <div className="flex items-center gap-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/50 rounded-2xl p-5 shadow-lg shadow-blue-500/5 backdrop-blur-sm">
+          <div className="flex items-center gap-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/50 rounded-2xl p-5 shadow-lg shadow-blue-500/5">
             <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
               <TrendingUp className="h-5 w-5 text-blue-600" />
             </div>
@@ -156,7 +156,7 @@ export default function PriceFormPage() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-200/50 shadow-xl shadow-emerald-500/10 p-8 space-y-6">
+          <div className="bg-white/80 rounded-3xl border border-emerald-200/50 shadow-xl shadow-emerald-500/10 p-8 space-y-6">
 
             {/* Brand selector */}
             <div className="space-y-1.5">

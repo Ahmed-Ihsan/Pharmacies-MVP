@@ -65,30 +65,42 @@ export default function PriceList() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-[hsl(var(--foreground))]">
-          {TRANSLATIONS.prices}
-        </h1>
+    <div className="space-y-8 animate-fade-in">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(270_70%_40%)] flex items-center justify-center shadow-[var(--shadow-md)]">
+            <DollarSign className="h-7 w-7 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-[hsl(var(--foreground))]">
+              {TRANSLATIONS.prices}
+            </h1>
+            <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
+              إدارة أسعار الأدوية التجارية
+            </p>
+          </div>
+        </div>
         <Link to="/prices/new">
-          <Button>
-            <Plus className="h-4 w-4 ml-2" />
+          <Button className="gap-2">
+            <Plus className="h-4 w-4" />
             {TRANSLATIONS.add}
           </Button>
         </Link>
       </div>
 
-      <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl p-6">
+      {/* Brand Selector Card */}
+      <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl p-6 shadow-[var(--shadow-sm)]">
         <label className="block text-sm font-medium text-[hsl(var(--foreground))] mb-2">
           اختر الدواء التجاري
         </label>
         <select
           value={selectedBrand || ''}
           onChange={(e) => setSelectedBrand(e.target.value ? Number(e.target.value) : null)}
-          className="w-full max-w-md px-4 py-2 border border-[hsl(var(--border))] rounded-lg bg-[hsl(var(--background))] text-[hsl(var(--foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]"
+          className="w-full max-w-md h-10 px-3.5 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--foreground))] focus:outline-none focus:border-[hsl(var(--ring))] focus:shadow-[0_0_0_3px_hsl(var(--ring)/0.15)] transition-[border-color,box-shadow] text-sm disabled:opacity-50"
           disabled={brandsLoading}
         >
-          <option value="">-- اختر دواء تجاري --</option>
+          <option value="">— اختر دواء تجاري —</option>
           {brands.map((brand) => (
             <option key={brand.brand_id || brand.id} value={brand.brand_id || brand.id}>
               {brand.brand_name || brand.name}
@@ -98,9 +110,9 @@ export default function PriceList() {
       </div>
 
       {!selectedBrand && (
-        <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl p-6 text-center">
-          <Package className="h-12 w-12 text-[hsl(var(--muted-foreground))] mx-auto mb-4" />
-          <p className="text-[hsl(var(--muted-foreground))]">
+        <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl p-10 text-center shadow-[var(--shadow-sm)]">
+          <Package className="h-10 w-10 text-[hsl(var(--muted-foreground))] mx-auto mb-3 opacity-50" />
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
             يرجى اختيار دواء تجاري لعرض أسعاره
           </p>
         </div>
@@ -113,24 +125,25 @@ export default function PriceList() {
       )}
 
       {selectedBrand && !loading && error && (
-        <div className="p-4 text-red-600 bg-red-50 rounded-md">{error}</div>
+        <div className="p-4 text-red-600 bg-red-50 border border-red-200 rounded-xl text-sm">{error}</div>
       )}
 
       {selectedBrand && !loading && data && data.items.length > 0 && (
-        <div className="bg-white rounded-2xl border border-[hsl(var(--border))] shadow-sm overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-[hsl(var(--muted))] border-b border-[hsl(var(--border))]">
-                <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">السعر</th>
-                <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">التاريخ</th>
-                <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">العملة</th>
-                <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">الحالة</th>
-                <th className="px-4 py-3.5 text-center text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">{TRANSLATIONS.actions}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[hsl(var(--border))]">
+        <div className="table-container">
+          <div className="table-responsive">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>السعر</th>
+                  <th>التاريخ</th>
+                  <th>العملة</th>
+                  <th>الحالة</th>
+                  <th className="text-center">{TRANSLATIONS.actions}</th>
+                </tr>
+              </thead>
+              <tbody>
               {data.items.map((price: any, index) => (
-                <tr key={price.price_id || price.id || index} className="hover:bg-[hsl(var(--accent))]/50 transition-colors">
+                <tr key={`${price.price_id || price.id || 'price'}-${index}`}>
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-2 text-[hsl(var(--foreground))]">
                       <DollarSign className="h-4 w-4 text-[hsl(var(--primary))]" />
@@ -144,19 +157,19 @@ export default function PriceList() {
                     {price.currency || '-'}
                   </td>
                   <td className="px-4 py-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
                       ساري
                     </span>
                   </td>
                   <td className="px-4 py-4">
-                    <div className="flex items-center gap-1.5">
-                      <button className="w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white flex items-center justify-center transition-all duration-200" title="عرض">
+                    <div className="table-actions">
+                      <button className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-[hsl(var(--primary))] text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors" title="عرض">
                         <Eye className="h-3.5 w-3.5" />
                       </button>
-                      <button className="w-8 h-8 rounded-full bg-amber-100 hover:bg-amber-500 text-amber-600 hover:text-white flex items-center justify-center transition-all duration-200" title="تعديل">
+                      <button className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-amber-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors" title="تعديل">
                         <Edit2 className="h-3.5 w-3.5" />
                       </button>
-                      <button className="w-8 h-8 rounded-full bg-red-100 hover:bg-red-600 text-red-600 hover:text-white flex items-center justify-center transition-all duration-200" title="حذف">
+                      <button className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-red-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors" title="حذف">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
@@ -165,6 +178,7 @@ export default function PriceList() {
               ))}
             </tbody>
           </table>
+          </div>
 
           {data.total > DEFAULT_PAGE_SIZE && (
             <div className="flex items-center justify-between px-4 py-4 border-t border-[hsl(var(--border))] bg-[hsl(var(--muted))]/50">
@@ -195,9 +209,9 @@ export default function PriceList() {
       )}
 
       {selectedBrand && !loading && data && data.items.length === 0 && (
-        <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl p-6 text-center">
-          <DollarSign className="h-12 w-12 text-[hsl(var(--muted-foreground))] mx-auto mb-4" />
-          <p className="text-[hsl(var(--muted-foreground))]">
+        <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl p-10 text-center shadow-[var(--shadow-sm)]">
+          <DollarSign className="h-10 w-10 text-[hsl(var(--muted-foreground))] mx-auto mb-3 opacity-40" />
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
             لا توجد أسعار مسجلة لهذا الدواء
           </p>
         </div>

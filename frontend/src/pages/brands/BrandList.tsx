@@ -69,7 +69,7 @@ export default function BrandList() {
   const getBrandId = (brand: any) => brand.brand_id || brand.id;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
@@ -93,24 +93,29 @@ export default function BrandList() {
         </DialogContent>
       </Dialog>
 
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-[hsl(var(--foreground))] mb-2">
-            {TRANSLATIONS.brands}
-          </h1>
-          <p className="text-[hsl(var(--muted-foreground))]">
-            إدارة الأدوية التجارية في النظام
-          </p>
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(270_70%_40%)] flex items-center justify-center shadow-[var(--shadow-md)]">
+            <Package className="h-7 w-7 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-[hsl(var(--foreground))]">
+              {TRANSLATIONS.brands}
+            </h1>
+            <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
+              إدارة الأدوية التجارية في النظام
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="hover:bg-[hsl(var(--accent))]">
-            <ScanBarcode className="h-4 w-4 ml-2" />
+          <Button variant="outline" className="gap-2">
+            <ScanBarcode className="h-4 w-4" />
             بحث بالباركود
           </Button>
           <Link to="/brands/new">
-            <Button className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary))] hover:shadow-lg transition-shadow">
-              <Plus className="h-4 w-4 ml-2" />
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
               {TRANSLATIONS.add}
             </Button>
           </Link>
@@ -119,18 +124,18 @@ export default function BrandList() {
 
       {/* Stats Card */}
       {data && (
-        <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
+        <div className="bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(270_70%_45%)] rounded-xl p-6 text-white shadow-[var(--shadow-md)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="bg-white/20 p-3 rounded-full">
-                <Package className="h-8 w-8" />
+              <div className="bg-white/20 p-3 rounded-lg">
+                <Package className="h-6 w-6" />
               </div>
               <div>
-                <p className="text-white/80 text-sm">إجمالي الأدوية التجارية</p>
-                <p className="text-3xl font-bold">{data.total.toLocaleString('ar-IQ')}</p>
+                <p className="text-white/90 text-sm font-medium">إجمالي الأدوية التجارية</p>
+                <p className="text-3xl font-bold mt-1">{data.total.toLocaleString('ar-IQ')}</p>
               </div>
             </div>
-            <Tag className="h-12 w-12 text-white/20" />
+            <Tag className="h-10 w-10 text-white/20" />
           </div>
         </div>
       )}
@@ -167,7 +172,10 @@ export default function BrandList() {
       </div>
 
       {error && (
-        <div className="p-4 text-red-600 bg-red-50 rounded-md">{error}</div>
+        <div className="p-4 text-red-600 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
+          <AlertTriangle className="h-5 w-5 shrink-0" />
+          {error}
+        </div>
       )}
 
       {loading && !data ? (
@@ -175,22 +183,23 @@ export default function BrandList() {
           <Loading text="جاري تحميل الأدوية التجارية..." />
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-[hsl(var(--border))] shadow-sm overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-[hsl(var(--muted))] border-b border-[hsl(var(--border))]">
-                <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">الاسم التجاري</th>
-                <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">الدواء الجنيس</th>
-                <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">الشركة المصنعة</th>
-                <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">شكل الجرعة</th>
-                <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">القوة</th>
-                <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">رقم NDC</th>
-                <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">الباركود</th>
-                <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">الحالة</th>
-                <th className="px-4 py-3.5 text-center text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">{TRANSLATIONS.actions}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[hsl(var(--border))]">
+        <div className="table-container">
+          <div className="table-responsive">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>الاسم التجاري</th>
+                  <th>الدواء الجنيس</th>
+                  <th>الشركة المصنعة</th>
+                  <th>شكل الجرعة</th>
+                  <th>القوة</th>
+                  <th>رقم NDC</th>
+                  <th>الباركود</th>
+                  <th>الحالة</th>
+                  <th className="text-center">{TRANSLATIONS.actions}</th>
+                </tr>
+              </thead>
+              <tbody>
               {data?.items.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="px-6 py-12 text-center">
@@ -207,7 +216,7 @@ export default function BrandList() {
                 </tr>
               ) : (
                 data?.items.map((brand, index) => (
-                  <tr key={getBrandId(brand) ?? index} className="hover:bg-[hsl(var(--accent))]/50 transition-colors">
+                  <tr key={`${getBrandId(brand) || 'brand'}-${index}`}>
                     <td className="px-4 py-4">
                       <Link
                         to={`/brands/${getBrandId(brand)}`}
@@ -223,7 +232,7 @@ export default function BrandList() {
                       )}
                     </td>
                     <td className="px-4 py-4">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))]">
                         {brand.generic_name || (
                           <span className="text-[hsl(var(--muted-foreground))]">غير محدد</span>
                         )}
@@ -270,30 +279,30 @@ export default function BrandList() {
                     <td className="px-4 py-4">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                         brand.status === 'active' || brand.status === 'ACTIVE'
-                          ? 'bg-green-100 text-green-800'
+                          ? 'bg-emerald-100 text-emerald-700'
                           : brand.status === 'discontinued' || brand.status === 'DISCONTINUED'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
+                          ? 'bg-amber-100 text-amber-700'
+                          : 'bg-red-100 text-red-700'
                       }`}>
                         {brand.status === 'active' || brand.status === 'ACTIVE' ? 'نشط' : 
                          brand.status === 'discontinued' || brand.status === 'DISCONTINUED' ? 'متوقف' : 'مسحوب'}
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 justify-center">
                         <Link to={`/brands/${getBrandId(brand)}`}>
-                          <button className="w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white flex items-center justify-center transition-all duration-200" title="عرض">
+                          <button className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-[hsl(var(--primary))] text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors" title="عرض">
                             <Eye className="h-3.5 w-3.5" />
                           </button>
                         </Link>
                         <Link to={`/brands/${getBrandId(brand)}/edit`}>
-                          <button className="w-8 h-8 rounded-full bg-amber-100 hover:bg-amber-500 text-amber-600 hover:text-white flex items-center justify-center transition-all duration-200" title="تعديل">
+                          <button className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-amber-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors" title="تعديل">
                             <Edit2 className="h-3.5 w-3.5" />
                           </button>
                         </Link>
                         <button
                           onClick={() => handleDelete(getBrandId(brand))}
-                          className="w-8 h-8 rounded-full bg-red-100 hover:bg-red-600 text-red-600 hover:text-white flex items-center justify-center transition-all duration-200"
+                          className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-red-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors"
                           title="حذف"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -305,6 +314,7 @@ export default function BrandList() {
               )}
             </tbody>
           </table>
+          </div>
 
           {data && data.total > DEFAULT_PAGE_SIZE && (
             <div className="flex items-center justify-between px-4 py-4 border-t border-[hsl(var(--border))] bg-[hsl(var(--muted))]/50">

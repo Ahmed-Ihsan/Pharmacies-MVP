@@ -70,15 +70,13 @@ export default function AlternativeList() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
       {/* Delete Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
-              </div>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-600" />
               تأكيد الحذف
             </DialogTitle>
             <DialogDescription>
@@ -93,54 +91,55 @@ export default function AlternativeList() {
       </Dialog>
 
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(270_70%_40%)] flex items-center justify-center shadow-[var(--shadow-md)]">
             <ArrowLeftRight className="h-7 w-7 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-[hsl(var(--foreground))]">
+            <h1 className="text-2xl font-bold text-[hsl(var(--foreground))]">
               {TRANSLATIONS.alternatives}
             </h1>
-            <p className="text-[hsl(var(--muted-foreground))] text-sm mt-0.5">
+            <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
               إدارة البدائل العلاجية للأدوية
             </p>
           </div>
         </div>
         <Link to="/alternatives/new">
-          <Button className="bg-gradient-to-l from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 text-white shadow-lg shadow-emerald-500/25 px-6 rounded-xl gap-2">
-            <Plus className="h-5 w-5" />
+          <Button className="gap-2">
+            <Plus className="h-4 w-4" />
             {TRANSLATIONS.add}
           </Button>
         </Link>
       </div>
 
-      {/* Stats Banner */}
+      {/* Stats Card */}
       {data && (
-        <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg shadow-emerald-500/20">
+        <div className="bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(270_70%_45%)] rounded-xl p-6 text-white shadow-[var(--shadow-md)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="bg-white/20 p-3 rounded-xl">
-                <ArrowLeftRight className="h-8 w-8" />
+              <div className="bg-white/20 p-3 rounded-lg">
+                <ArrowLeftRight className="h-6 w-6" />
               </div>
               <div>
-                <p className="text-white/80 text-sm">إجمالي البدائل العلاجية</p>
-                <p className="text-3xl font-bold">{data.total.toLocaleString('ar-IQ')}</p>
+                <p className="text-white/90 text-sm font-medium">إجمالي البدائل العلاجية</p>
+                <p className="text-3xl font-bold mt-1">{data.total.toLocaleString('ar-IQ')}</p>
               </div>
             </div>
-            <ArrowLeftRight className="h-16 w-16 text-white/10" />
+            <ArrowLeftRight className="h-10 w-10 text-white/20" />
           </div>
         </div>
       )}
 
       {/* Search Bar */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-[hsl(var(--border))] shadow-sm p-4">
+      <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl p-4 shadow-[var(--shadow-sm)]">
         <SearchBar onSearch={handleSearch} loading={loading} />
       </div>
 
       {/* Error */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4">
+        <div className="p-4 text-red-600 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
+          <AlertTriangle className="h-5 w-5 shrink-0" />
           {error}
         </div>
       )}
@@ -154,34 +153,24 @@ export default function AlternativeList() {
 
       {/* Data Table */}
       {!loading && data && (
-        <div className="bg-white rounded-2xl border border-[hsl(var(--border))] shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+        <div className="table-container">
+          <div className="table-responsive">
+            <table className="data-table">
               <thead>
-                <tr className="bg-[hsl(var(--muted))] border-b border-[hsl(var(--border))]">
-                  <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">
-                    الدواء الأساسي
-                  </th>
-                  <th className="px-4 py-3.5 text-center text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider w-16">
-                    ←→
-                  </th>
-                  <th className="px-4 py-3.5 text-right text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">
-                    الدواء البديل
-                  </th>
-                   <th className="px-4 py-3.5 text-center text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">
-                     حالة التكافؤ
-                   </th>
-                  <th className="px-4 py-3.5 text-center text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">
-                    {TRANSLATIONS.actions}
-                  </th>
+                <tr>
+                  <th>الدواء الأساسي</th>
+                  <th className="text-center w-16">←→</th>
+                  <th>الدواء البديل</th>
+                   <th className="text-center">حالة التكافؤ</th>
+                  <th className="text-center">{TRANSLATIONS.actions}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[hsl(var(--border))/0.6]">
+              <tbody>
                 {data.items.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-6 py-16 text-center">
                       <div className="flex flex-col items-center gap-3">
-                        <div className="w-16 h-16 rounded-full bg-[hsl(var(--muted))] flex items-center justify-center">
+                        <div className="h-16 w-16 rounded-full bg-[hsl(var(--muted))] flex items-center justify-center">
                           <Search className="h-8 w-8 text-[hsl(var(--muted-foreground))]" />
                         </div>
                         <p className="text-[hsl(var(--muted-foreground))] font-medium">{TRANSLATIONS.no_results}</p>
@@ -190,12 +179,12 @@ export default function AlternativeList() {
                     </td>
                   </tr>
                 ) : (
-                  data.items.map((item) => (
-                    <tr key={item.alternative_id} className="hover:bg-[hsl(var(--accent))]/50 transition-colors duration-150">
+                  data.items.map((item, index) => (
+                    <tr key={item.alternative_id}>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                            <Pill className="h-4 w-4 text-blue-600" />
+                          <div className="h-8 w-8 rounded-lg bg-[hsl(var(--primary)/0.1)] flex items-center justify-center flex-shrink-0">
+                            <Pill className="h-4 w-4 text-[hsl(var(--primary))]" />
                           </div>
                           <span className="font-semibold text-[hsl(var(--foreground))]">
                             {item.primary_generic_name}
@@ -203,14 +192,14 @@ export default function AlternativeList() {
                         </div>
                       </td>
                       <td className="px-4 py-4 text-center">
-                        <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
-                          <ArrowLeftRight className="h-4 w-4 text-emerald-600" />
+                        <div className="h-8 w-8 rounded-full bg-[hsl(var(--primary)/0.1)] flex items-center justify-center mx-auto">
+                          <ArrowLeftRight className="h-4 w-4 text-[hsl(var(--primary))]" />
                         </div>
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                            <Pill className="h-4 w-4 text-emerald-600" />
+                          <div className="h-8 w-8 rounded-lg bg-[hsl(var(--primary)/0.1)] flex items-center justify-center flex-shrink-0">
+                            <Pill className="h-4 w-4 text-[hsl(var(--primary))]" />
                           </div>
                           <span className="font-semibold text-[hsl(var(--foreground))]">
                             {item.alternative_generic_name}
@@ -229,18 +218,18 @@ export default function AlternativeList() {
                       <td className="px-4 py-4">
                         <div className="flex items-center justify-center gap-1.5">
                           <Link to={`/generics/${item.primary_generic_id}`}>
-                            <button className="w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white flex items-center justify-center transition-all duration-200" title="عرض الدواء الأساسي">
+                            <button className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-[hsl(var(--primary))] text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors" title="عرض الدواء الأساسي">
                               <Eye className="h-3.5 w-3.5" />
                             </button>
                           </Link>
                           <Link to={`/alternatives/${item.alternative_id}/edit`}>
-                            <button className="w-8 h-8 rounded-full bg-amber-100 hover:bg-amber-500 text-amber-600 hover:text-white flex items-center justify-center transition-all duration-200" title="تعديل">
+                            <button className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-amber-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors" title="تعديل">
                               <Edit2 className="h-3.5 w-3.5" />
                             </button>
                           </Link>
                           <button
                             onClick={() => handleDeleteClick(item.alternative_id)}
-                            className="w-8 h-8 rounded-full bg-red-100 hover:bg-red-600 text-red-600 hover:text-white flex items-center justify-center transition-all duration-200"
+                            className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-red-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors"
                             title="حذف"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -252,7 +241,7 @@ export default function AlternativeList() {
                 )}
               </tbody>
             </table>
-          </div>
+            </div>
 
           {/* Pagination */}
           {data.total > DEFAULT_PAGE_SIZE && (
@@ -266,7 +255,6 @@ export default function AlternativeList() {
                   size="sm"
                   disabled={skip === 0}
                   onClick={() => setSkip(Math.max(0, skip - DEFAULT_PAGE_SIZE))}
-                  className="rounded-lg px-4"
                 >
                   السابق
                 </Button>
@@ -275,7 +263,6 @@ export default function AlternativeList() {
                   size="sm"
                   disabled={skip + DEFAULT_PAGE_SIZE >= data.total}
                   onClick={() => setSkip(skip + DEFAULT_PAGE_SIZE)}
-                  className="rounded-lg px-4"
                 >
                   التالي
                 </Button>
