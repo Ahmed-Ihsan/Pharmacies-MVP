@@ -4,16 +4,16 @@
 
 ### Step 1: Copy Files to Target PC
 
-**Option A: Using USB Drive**
+**Option A: Using Git (Recommended)**
+```bash
+git clone https://github.com/Ahmed-Ihsan/Pharmacies-MVP.git
+cd Pharmacies-MVP
+```
+
+**Option B: Using USB Drive**
 1. Copy the entire `cydl` folder to a USB drive
 2. Plug USB into target PC
 3. Copy folder to Desktop or desired location
-
-**Option B: Using Git (if repository is online)**
-```bash
-git clone <your-repository-url>
-cd cydl
-```
 
 **Option C: Using ZIP File**
 1. Right-click the `cydl` folder
@@ -22,22 +22,35 @@ cd cydl
 
 ### Step 2: Install Docker Desktop (One-time setup)
 
+**Important: This is the ONLY thing you need to install on the target PC.**
+
 1. Download: https://www.docker.com/products/docker-desktop/
 2. Run installer and follow prompts
 3. Restart computer when asked
 4. Start Docker Desktop from Start menu
 5. Wait for Docker to fully start (tray icon shows running)
 
+**You do NOT need to install:**
+- ❌ Python
+- ❌ Node.js
+- ❌ npm
+- ❌ nginx
+- ❌ Database servers
+- ❌ Any other development tools
+
+Docker containers include everything automatically.
+
 ### Step 3: Deploy Application
 
-Open PowerShell or Command Prompt in the `cydl` folder and run:
+Open PowerShell or Command Prompt in the project folder and run:
 
 ```bash
 # Windows - Using the deployment script
 .\deploy-docker.bat
 
 # OR - Manual command
-docker-compose up --build -d
+docker-compose build
+docker-compose up -d
 ```
 
 That's it! The application will be available at:
