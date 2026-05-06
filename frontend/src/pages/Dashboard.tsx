@@ -13,7 +13,6 @@ import {
   RefreshCw,
   AlertCircle,
 } from 'lucide-react';
-import { Card, CardContent } from '../components/ui/card';
 import { Skeleton } from '../components/ui/skeleton';
 import { TRANSLATIONS } from '../utils/constants';
 import { genericService } from '../services/genericService';
@@ -206,20 +205,20 @@ export default function Dashboard() {
   const progress = (loadedCount / 6) * 100;
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Welcome Banner with Subtle Gradient Accent */}
-      <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-[hsl(var(--primary)/0.05)] via-[hsl(var(--card))] to-[hsl(var(--card))] border border-[hsl(var(--border))] shadow-[var(--shadow-sm)]">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-[hsl(var(--primary)/0.03)] rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-40 h-40 bg-[hsl(var(--primary)/0.02)] rounded-full blur-3xl" />
-        <div className="relative p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-[hsl(var(--foreground))] mb-2">
+    <div className="space-y-8 animate-slide-up-premium">
+      {/* Welcome Banner - Luxury Glass with Purple Glow */}
+      <div className="glass-panel glow-border relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-[hsl(var(--primary)/0.08)] rounded-full blur-3xl animate-float-gentle" />
+        <div className="absolute bottom-0 left-0 w-56 h-56 bg-[hsl(var(--primary-accent)/0.06)] rounded-full blur-3xl animate-float-gentle" style={{ animationDelay: '1s' }} />
+        <div className="relative p-8 sm:p-10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            <div className="flex-1">
+              <h1 className="text-3xl sm:text-4xl font-bold gradient-text mb-3">
                 مرحباً، المسؤول
               </h1>
               <div className="flex items-center gap-3 text-sm text-[hsl(var(--muted-foreground))]">
-                <div className={`w-2 h-2 rounded-full shrink-0 ${hasErrors ? 'bg-amber-400' : 'bg-emerald-500'} shadow-sm`} />
-                <span>{hasErrors ? 'بعض البيانات غير متاحة' : 'جميع الأنظمة تعمل بشكل طبيعي'}</span>
+                <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${hasErrors ? 'bg-amber-400 animate-pulse-glow' : 'bg-emerald-500 animate-pulse-glow'} shadow-lg`} />
+                <span className="font-medium">{hasErrors ? 'بعض البيانات غير متاحة' : 'جميع الأنظمة تعمل بشكل طبيعي'}</span>
                 {lastUpdated && (
                   <>
                     <span className="text-[hsl(var(--border))]">·</span>
@@ -228,16 +227,16 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="hidden sm:block text-sm text-[hsl(var(--muted-foreground))] bg-[hsl(var(--muted))] px-3 py-1.5 rounded-lg">
+            <div className="flex items-center gap-4">
+              <span className="hidden sm:block text-sm text-[hsl(var(--muted-foreground))] glass-panel px-4 py-2 rounded-full border-[hsl(var(--border-lux))]">
                 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', day: 'numeric', month: 'long' })}
               </span>
               <button
                 onClick={fetchStats}
                 disabled={loading}
-                className="inline-flex items-center gap-2 h-10 px-4 rounded-lg bg-[hsl(var(--primary))] hover:bg-[hsl(217_88%_44%)] text-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                className="btn-luxury-primary inline-flex items-center gap-2"
               >
-                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-4.5 w-4.5 ${loading ? 'animate-spin' : ''}`} />
                 تحديث البيانات
               </button>
             </div>
@@ -245,126 +244,130 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Loading Progress with Gradient */}
+      {/* Loading Progress - Luxury Glass */}
       {loading && (
-        <Card className="border-[hsl(var(--border))] shadow-[var(--shadow-sm)]">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-[hsl(var(--foreground))]">جاري تحميل الإحصائيات...</span>
-              <span className="text-xs font-semibold text-[hsl(var(--primary))]">{Math.round(progress)}%</span>
+        <div className="card-luxury">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-semibold text-[hsl(var(--foreground))]">جاري تحميل الإحصائيات...</span>
+              <span className="text-xs font-bold gradient-text">{Math.round(progress)}%</span>
             </div>
-            <div className="h-1.5 bg-[hsl(var(--muted))] rounded-full overflow-hidden">
+            <div className="h-2 bg-[hsl(var(--muted))] rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(217_88%_60%)] rounded-full transition-[width] duration-500"
+                className="h-full bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-accent))] rounded-full transition-[width] duration-500 ease-out shadow-lg"
                 style={{ width: `${progress}%` }}
               />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
-      {/* Quick Actions - Compact Design */}
+      {/* Quick Actions - Luxury Glass Cards */}
       <div>
-        <div className="flex items-center gap-3 mb-4">
-          <div className="h-px flex-1 bg-[hsl(var(--border))]" />
-          <h2 className="text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-widest">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[hsl(var(--border-lux))] to-transparent" />
+          <h2 className="text-xs font-bold text-[hsl(var(--muted-foreground))] uppercase tracking-[0.2em]">
             إجراءات سريعة
           </h2>
-          <div className="h-px flex-1 bg-[hsl(var(--border))]" />
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[hsl(var(--border-lux))] to-transparent" />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {quickActions.map((action, index) => {
             const Icon = action.icon;
             return (
               <Link key={`${action.path}-${index}`} to={action.path}>
-                <Card className="group border-[hsl(var(--border))] hover:border-[hsl(var(--primary)/0.5)] hover:shadow-[var(--shadow-md)] transition-all duration-200 cursor-pointer">
-                  <CardContent className="p-4 flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-lg bg-[hsl(var(--primary))] group-hover:bg-[hsl(217_88%_48%)] flex items-center justify-center shrink-0 transition-colors shadow-sm">
-                      <Icon className="h-4.5 w-4.5 text-white" />
+                <div className="card-luxury group cursor-pointer">
+                  <div className="p-5 flex items-center gap-4">
+                    <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-accent))] group-hover:scale-110 transition-transform duration-300 flex items-center justify-center shrink-0 shadow-lg">
+                      <Icon className="h-5.5 w-5.5 text-white" />
                     </div>
-                    <span className="font-semibold text-[hsl(var(--foreground))] text-sm group-hover:text-[hsl(var(--primary))] transition-colors">{action.label}</span>
-                  </CardContent>
-                </Card>
+                    <span className="font-semibold text-[hsl(var(--foreground))] text-sm group-hover:gradient-text transition-colors duration-300">{action.label}</span>
+                  </div>
+                </div>
               </Link>
             );
           })}
         </div>
       </div>
 
-      {/* KPI Cards - Larger Numbers & Icon Containers */}
+      {/* KPI Cards - Asymmetric Bento Grid with Luxury Glass */}
       <div>
-        <div className="flex items-center gap-3 mb-4">
-          <div className="h-px flex-1 bg-[hsl(var(--border))]" />
-          <h2 className="text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-widest">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[hsl(var(--border-lux))] to-transparent" />
+          <h2 className="text-xs font-bold text-[hsl(var(--muted-foreground))] uppercase tracking-[0.2em]">
             نظرة عامة على النظام
           </h2>
-          <div className="h-px flex-1 bg-[hsl(var(--border))]" />
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[hsl(var(--border-lux))] to-transparent" />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {statCards.map((card) => {
+        <div className="bento-grid">
+          {statCards.map((card, index) => {
             const Icon = card.icon;
             const value = stats[card.key];
             const isLoaded = stats.isLoaded[card.key];
             const hasError = errors[card.key];
 
+            // Asymmetric layout: first card spans 2 columns on desktop
+            const isFeatured = index === 0;
+            const gridClass = isFeatured ? 'bento-span-2' : '';
+
             return (
-              <Link key={card.key} to={card.path}>
-                <Card className="group border-[hsl(var(--border))] hover:border-[hsl(var(--primary)/0.4)] hover:shadow-[var(--shadow-md)] transition-all duration-200 cursor-pointer shadow-[var(--shadow-sm)]">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`${card.iconBg} p-4 rounded-xl group-hover:scale-105 transition-transform duration-200`}>
-                        <Icon className={`h-6 w-6 ${card.iconColor}`} />
+              <Link key={card.key} to={card.path} className={gridClass}>
+                <div className="card-luxury group h-full cursor-pointer">
+                  <div className="p-6 sm:p-8">
+                    <div className="flex items-start justify-between mb-5">
+                      <div className={`p-4 rounded-xl group-hover:scale-110 transition-transform duration-300 bg-gradient-to-br from-[hsl(var(--primary)/0.1)] to-[hsl(var(--primary-accent)/0.1)]`}>
+                        <Icon className="h-7 w-7 text-[hsl(var(--primary))]" />
                       </div>
-                      {hasError && <AlertCircle className="h-4 w-4 text-amber-500" />}
+                      {hasError && <AlertCircle className="h-5 w-5 text-amber-500" />}
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wide mb-3">{card.label}</p>
+                      <p className="text-xs font-bold text-[hsl(var(--muted-foreground))] uppercase tracking-[0.15em] mb-4">{card.label}</p>
                       {!isLoaded ? (
-                        <div className="space-y-2">
-                          <Skeleton className="h-10 w-28 rounded-lg" />
-                          <Skeleton className="h-3 w-32 rounded" />
+                        <div className="space-y-3">
+                          <Skeleton className="h-12 w-32 rounded-xl" />
+                          <Skeleton className="h-4 w-40 rounded-lg" />
                         </div>
                       ) : (
                         <>
-                          <p className="text-4xl font-bold text-[hsl(var(--foreground))] leading-none mb-2 group-hover:text-[hsl(var(--primary))] transition-colors">
+                          <p className="text-5xl font-bold gradient-text leading-none mb-3 group-hover:scale-105 transition-transform duration-300 origin-right">
                             {hasError ? '—' : value.toLocaleString('ar-IQ')}
                           </p>
-                          <p className="text-xs text-[hsl(var(--muted-foreground))]">{card.description}</p>
+                          <p className="text-sm text-[hsl(var(--muted-foreground))] font-medium">{card.description}</p>
                         </>
                       )}
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </Link>
             );
           })}
         </div>
       </div>
 
-      {/* Total Summary Footer with Accent Border */}
-      <Card className="border-[hsl(var(--border))] border-t-[hsl(var(--primary)/0.3)] shadow-[var(--shadow-sm)]">
-        <CardContent className="p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center shadow-sm">
-                <TrendingUp className="h-5 w-5 text-emerald-600" />
+      {/* Total Summary Footer - Luxury Glass with Accent */}
+      <div className="card-luxury border-t-2 border-t-[hsl(var(--primary))]">
+        <div className="p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            <div className="flex items-center gap-5">
+              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[hsl(var(--primary)/0.15)] to-[hsl(var(--primary-accent)/0.15)] flex items-center justify-center shadow-lg border border-[hsl(var(--border-lux))]">
+                <TrendingUp className="h-7 w-7 text-[hsl(var(--primary))]" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-[hsl(var(--foreground))]">إجمالي العناصر في النظام</p>
+                <p className="text-base font-semibold text-[hsl(var(--foreground))] mb-1">إجمالي العناصر في النظام</p>
                 <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                  {loading ? 'جاري الحساب...' : `${totalItems.toLocaleString('ar-IQ')} عنصر مسجل`}
+                  {loading ? 'جاري الحساب...' : <span className="gradient-text font-bold text-lg">{totalItems.toLocaleString('ar-IQ')} عنصر مسجل</span>}
                 </p>
               </div>
             </div>
             {hasErrors && (
-              <div className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-700 font-medium">
-                <AlertCircle className="h-4 w-4" />
+              <div className="inline-flex items-center gap-2.5 px-5 py-3 glass-panel border border-amber-500/30 rounded-xl text-sm text-amber-400 font-semibold">
+                <AlertCircle className="h-4.5 w-4.5" />
                 بعض البيانات غير متاحة
               </div>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

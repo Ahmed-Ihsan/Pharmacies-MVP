@@ -1,4 +1,4 @@
-import { useHotkeys } from 'react-hotkeys-hook';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface KeyboardShortcutsConfig {
@@ -13,52 +13,93 @@ interface KeyboardShortcutsConfig {
 export function useKeyboardShortcuts(config: KeyboardShortcutsConfig) {
   const navigate = useNavigate();
 
-  // Global shortcuts
-  useHotkeys('ctrl+k, cmd+k', (e) => {
-    e.preventDefault();
-    config.onSearch?.();
-  }, { enableOnFormTags: true });
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeTag = document.activeElement?.tagName;
+      const isInputFocused = activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT';
 
-  useHotkeys('ctrl+n, cmd+n', (e) => {
-    e.preventDefault();
-    config.onNew?.();
-  }, { enableOnFormTags: true });
+      // Ctrl/Cmd + K - Search
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        config.onSearch?.();
+      }
 
-  useHotkeys('ctrl+s, cmd+s', (e) => {
-    e.preventDefault();
-    config.onSave?.();
-  }, { enableOnFormTags: true });
+      // Ctrl/Cmd + N - New
+      if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+        e.preventDefault();
+        config.onNew?.();
+      }
 
-  useHotkeys('escape', (e) => {
-    e.preventDefault();
-    config.onCancel?.();
-  });
+      // Ctrl/Cmd + S - Save
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        config.onSave?.();
+      }
 
-  useHotkeys('ctrl+r, cmd+r', (e) => {
-    e.preventDefault();
-    config.onRefresh?.();
-  });
+      // Escape - Cancel
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        config.onCancel?.();
+      }
 
-  useHotkeys('delete, backspace', (e) => {
-    if (document.activeElement?.tagName !== 'INPUT' && 
-        document.activeElement?.tagName !== 'TEXTAREA') {
-      e.preventDefault();
-      config.onDelete?.();
-    }
-  });
+      // Ctrl/Cmd + R - Refresh
+      if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+        e.preventDefault();
+        config.onRefresh?.();
+      }
 
-  // Navigation shortcuts
-  useHotkeys('g then d', () => navigate('/'));
-  useHotkeys('g then g', () => navigate('/generics'));
-  useHotkeys('g then b', () => navigate('/brands'));
-  useHotkeys('g then m', () => navigate('/manufacturers'));
-  useHotkeys('g then t', () => navigate('/therapeutic-classes'));
-  useHotkeys('g then f', () => navigate('/dosage-forms'));
-  useHotkeys('g then a', () => navigate('/alternatives'));
-  useHotkeys('g then p', () => navigate('/prices'));
-  useHotkeys('g then s', () => navigate('/search'));
-  useHotkeys('g then u', () => navigate('/profile'));
-  useHotkeys('g then e', () => navigate('/settings'));
+      // Delete - Delete (only when not in input)
+      if ((e.key === 'Delete' || e.key === 'Backspace') && !isInputFocused) {
+        e.preventDefault();
+        config.onDelete?.();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [config, navigate]);
+
+  // Navigation shortcuts (G + key pattern)
+  useEffect(() => {
+    let gPressed = false;
+    let gTimeout: NodeJS.Timeout;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'g' || e.key === 'G') {
+        gPressed = true;
+        gTimeout = setTimeout(() => { gPressed = false; }, 500);
+      } else if (gPressed) {
+        clearTimeout(gTimeout);
+        gPressed = false;
+
+        const key = e.key.toLowerCase();
+        const routes: Record<string, string> = {
+          d: '/',
+          g: '/generics',
+          b: '/brands',
+          m: '/manufacturers',
+          t: '/therapeutic-classes',
+          f: '/dosage-forms',
+          a: '/alternatives',
+          p: '/prices',
+          s: '/search',
+          u: '/profile',
+          e: '/settings',
+        };
+
+        if (routes[key]) {
+          e.preventDefault();
+          navigate(routes[key]);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      clearTimeout(gTimeout);
+    };
+  }, [navigate]);
 }
 
 export function useKeyboardShortcutsHelp() {

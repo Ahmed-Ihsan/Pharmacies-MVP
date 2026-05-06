@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Eye, Edit2, Trash2, Building2, Factory, Search, MapPin, Globe, AlertTriangle, Download, Filter, Save, X, Loader2 } from 'lucide-react';
 import { manufacturerService } from '../../services/manufacturerService';
@@ -67,16 +67,16 @@ export default function ManufacturerList() {
     },
   });
 
-  const handleSearch = (query: string) => {
+  const handleSearch = useCallback((query: string) => {
     setSearch(query);
     setSkip(0);
-  };
+  }, []);
 
-  const handleEdit = (manufacturer: Manufacturer) => {
+  const handleEdit = useCallback((manufacturer: Manufacturer) => {
     setManufacturerToEdit(manufacturer);
     setEditDialogOpen(true);
     setEditError(null);
-  };
+  }, []);
 
   const handleEditSubmit = async (formData: any) => {
     if (!manufacturerToEdit) return;
@@ -104,10 +104,10 @@ export default function ManufacturerList() {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = useCallback(async (id: number) => {
     setManufacturerToDelete(id);
     setDeleteDialogOpen(true);
-  };
+  }, []);
 
   const confirmDelete = async () => {
     if (!manufacturerToDelete) return;
@@ -172,41 +172,41 @@ export default function ManufacturerList() {
     }
   };
 
-  const handleFilterApply = (filters: Record<string, any>) => {
+  const handleFilterApply = useCallback((filters: Record<string, any>) => {
     // Implement filter logic
     console.log('Filters applied:', filters);
-  };
+  }, []);
 
-  const handleFilterClear = () => {
+  const handleFilterClear = useCallback(() => {
     setSearch('');
-  };
+  }, []);
 
-  const handleSelectAll = () => {
+  const handleSelectAll = useCallback(() => {
     if (selectAll) {
       setSelectedIds([]);
     } else if (data) {
       setSelectedIds(data.items.map(item => getManufacturerId(item)));
     }
     setSelectAll(!selectAll);
-  };
+  }, [selectAll, data]);
 
-  const toggleSelection = (id: number) => {
+  const toggleSelection = useCallback((id: number) => {
     setSelectedIds(prev => 
       prev.includes(id) 
         ? prev.filter(i => i !== id)
         : [...prev, id]
     );
-  };
+  }, []);
 
-  const getManufacturerId = (manufacturer: Manufacturer) => manufacturer.manufacturer_id || manufacturer.id || 0;
+  const getManufacturerId = (manufacturer: Manufacturer) => manufacturer.manufacturer_id;
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-slide-up-premium">
       {/* Quick Edit Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md glass-panel border-[hsl(var(--border-lux))]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 gradient-text">
               <Edit2 className="h-5 w-5 text-[hsl(var(--primary))]" />
               تعديل الشركة المصنعة
             </DialogTitle>
@@ -214,7 +214,7 @@ export default function ManufacturerList() {
           <DialogDescription className="sr-only">
             تعديل بيانات الشركة المصنعة بسرعة دون مغادرة الصفحة
           </DialogDescription>
-          
+
           {editLoading ? (
             <div className="space-y-4 py-4">
               {/* Skeleton Loading matching form layout */}
@@ -256,8 +256,8 @@ export default function ManufacturerList() {
                 <label className="text-sm font-medium text-[hsl(var(--foreground))]">اسم الشركة</label>
                 <input
                   name="manufacturer_name"
-                  defaultValue={manufacturerToEdit.manufacturer_name || manufacturerToEdit.name}
-                  className="w-full h-10 px-3 rounded-lg bg-[hsl(var(--bg-elevated))] border border-[hsl(var(--border))] focus:outline-none focus:border-[hsl(var(--primary))] transition-colors"
+                  defaultValue={manufacturerToEdit.manufacturer_name}
+                  className="input-luxury w-full"
                   required
                 />
               </div>
@@ -266,7 +266,7 @@ export default function ManufacturerList() {
                 <input
                   name="license_number"
                   defaultValue={(manufacturerToEdit as any).license_number || ''}
-                  className="w-full h-10 px-3 rounded-lg bg-[hsl(var(--bg-elevated))] border border-[hsl(var(--border))] focus:outline-none focus:border-[hsl(var(--primary))] transition-colors"
+                  className="input-luxury w-full"
                 />
               </div>
               <div className="space-y-2">
@@ -274,7 +274,7 @@ export default function ManufacturerList() {
                 <select
                   name="country_code"
                   defaultValue={manufacturerToEdit.country_code || ''}
-                  className="w-full h-10 px-3 rounded-lg bg-[hsl(var(--bg-elevated))] border border-[hsl(var(--border))] focus:outline-none focus:border-[hsl(var(--primary))] transition-colors"
+                  className="input-luxury w-full"
                 >
                   <option value="">-- اختر الدولة --</option>
                   <option value="IQ">العراق</option>
@@ -289,7 +289,7 @@ export default function ManufacturerList() {
                 <select
                   name="status"
                   defaultValue={manufacturerToEdit.status || 'active'}
-                  className="w-full h-10 px-3 rounded-lg bg-[hsl(var(--bg-elevated))] border border-[hsl(var(--border))] focus:outline-none focus:border-[hsl(var(--primary))] transition-colors"
+                  className="input-luxury w-full"
                 >
                   <option value="active">نشط</option>
                   <option value="suspended">غير نشط</option>
@@ -297,7 +297,7 @@ export default function ManufacturerList() {
               </div>
             </form>
           ) : null}
-          
+
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setEditDialogOpen(false)} className="gap-2">
               <X className="h-4 w-4" />
@@ -318,7 +318,7 @@ export default function ManufacturerList() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
+        <DialogContent className="glass-panel border-[hsl(var(--border-lux))]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-red-600" />
@@ -339,32 +339,32 @@ export default function ManufacturerList() {
         </DialogContent>
       </Dialog>
 
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(270_70%_40%)] flex items-center justify-center shadow-[var(--shadow-md)]">
-            <Building2 className="h-7 w-7 text-white" />
+      {/* Page Header - Luxury Glass */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <div className="flex items-center gap-5">
+          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-accent))] flex items-center justify-center shadow-lg animate-pulse-glow">
+            <Building2 className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[hsl(var(--foreground))]">
+            <h1 className="text-3xl font-bold gradient-text">
               الشركات المصنعة
             </h1>
-            <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
+            <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1.5 font-medium">
               إدارة الشركات المصنعة للأدوية
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setFilterOpen(true)} className="gap-2">
+        <div className="flex items-center gap-3">
+          <Button variant="outline" onClick={() => setFilterOpen(true)} className="gap-2 btn-luxury-secondary">
             <Filter className="h-4 w-4" />
             تصفية
           </Button>
-          <Button variant="outline" onClick={() => handleExport()} className="gap-2">
+          <Button variant="outline" onClick={() => handleExport()} className="gap-2 btn-luxury-secondary">
             <Download className="h-4 w-4" />
             تصدير
           </Button>
           <Link to="/manufacturers/new">
-            <Button className="gap-2">
+            <Button className="gap-2 btn-luxury-primary">
               <Plus className="h-4 w-4" />
               إضافة شركة
             </Button>
@@ -372,31 +372,33 @@ export default function ManufacturerList() {
         </div>
       </div>
 
-      {/* Stats Card */}
+      {/* Stats Card - Luxury Glass */}
       {data && (
-        <div className="bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(270_70%_45%)] rounded-xl p-6 text-white shadow-[var(--shadow-md)]">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="bg-white/20 p-3 rounded-lg">
-                <Factory className="h-6 w-6" />
+        <div className="card-luxury border-t-2 border-t-[hsl(var(--primary))]">
+          <div className="p-6 sm:p-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-5">
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-[hsl(var(--primary)/0.2)] to-[hsl(var(--primary-accent)/0.15)] flex items-center justify-center border border-[hsl(var(--border-lux))]">
+                  <Factory className="h-7 w-7 text-[hsl(var(--primary))]" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-[hsl(var(--muted-foreground))]">إجمالي الشركات المصنعة</p>
+                  <p className="text-4xl font-bold gradient-text mt-1">{data.total.toLocaleString('ar-IQ')}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-white/90 text-sm font-medium">إجمالي الشركات المصنعة</p>
-                <p className="text-3xl font-bold mt-1">{data.total.toLocaleString('ar-IQ')}</p>
-              </div>
+              <Building2 className="h-12 w-12 text-[hsl(var(--primary))]/20" />
             </div>
-            <Building2 className="h-10 w-10 text-white/20" />
           </div>
         </div>
       )}
 
-      {/* Search Bar */}
-      <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl p-4 shadow-[var(--shadow-sm)]">
+      {/* Search Bar - Luxury Glass */}
+      <div className="glass-panel p-5">
         <SearchBar onSearch={handleSearch} loading={loading} />
       </div>
 
       {error && (
-        <div className="p-4 text-red-600 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
+        <div className="p-5 text-red-600 glass-panel border border-red-500/30 rounded-xl flex items-center gap-3">
           <AlertTriangle className="h-5 w-5 shrink-0" />
           {error}
         </div>
@@ -407,7 +409,7 @@ export default function ManufacturerList() {
           <Loading text="جاري تحميل الشركات المصنعة..." />
         </div>
       ) : (
-        <div className="table-container">
+        <div className="table-luxury-container">
           <div className="table-responsive">
             <table className="data-table">
               <thead>
@@ -461,18 +463,13 @@ export default function ManufacturerList() {
                         className="font-semibold text-[hsl(var(--primary))] hover:underline flex items-center gap-2"
                       >
                         <Building2 className="h-4 w-4 text-[hsl(var(--primary))]" />
-                        {manufacturer.manufacturer_name || manufacturer.name}
+                        {manufacturer.manufacturer_name}
                       </Link>
-                      {(manufacturer.arabic_name || manufacturer.name) && (
-                        <div className="text-sm text-[hsl(var(--muted-foreground))] mr-6">
-                          {manufacturer.arabic_name || ''}
-                        </div>
-                      )}
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-2 text-[hsl(var(--foreground))]">
                         <Globe className="h-4 w-4 text-[hsl(var(--muted-foreground))]" />
-                        {manufacturer.country || manufacturer.country_code || '-'}
+                        {manufacturer.country_code || '-'}
                       </div>
                     </td>
                     <td className="px-4 py-4">
@@ -483,11 +480,11 @@ export default function ManufacturerList() {
                     </td>
                     <td className="px-4 py-4">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                        manufacturer.status === 'active' || manufacturer.is_active 
-                          ? 'bg-emerald-100 text-emerald-700' 
+                        manufacturer.status === 'active'
+                          ? 'bg-emerald-100 text-emerald-700'
                           : 'bg-gray-100 text-gray-700'
                       }`}>
-                        {manufacturer.status === 'active' || manufacturer.is_active ? 'نشط' : 'غير نشط'}
+                        {manufacturer.status === 'active' ? 'نشط' : 'غير نشط'}
                       </span>
                     </td>
                     <td className="px-4 py-4">

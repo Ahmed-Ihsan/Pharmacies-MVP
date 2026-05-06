@@ -44,31 +44,30 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       
       <aside
         className={cn(
-          "fixed lg:static inset-y-0 right-0 z-40 w-64 transition-transform duration-200 ease-in-out",
+          "fixed lg:static inset-y-0 right-0 z-40 w-64 transition-transform duration-300 ease-in-out",
           isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0",
-          "bg-[hsl(var(--card))] border-l border-[hsl(var(--border))]",
-          "flex flex-col",
-          "shadow-[var(--shadow-md)]"
+          "glass-panel border-l border-[hsl(var(--border-lux))]",
+          "flex flex-col"
         )}
       >
         <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="h-16 px-5 flex items-center gap-3 border-b border-[hsl(var(--border))] shrink-0">
-            <div className="h-9 w-9 rounded-lg bg-[hsl(var(--primary))] flex items-center justify-center shadow-sm">
-              <Activity className="h-4.5 w-4.5 text-white" />
+          {/* Logo - Luxury Glass with Glow */}
+          <div className="h-20 px-5 flex items-center gap-4 border-b border-[hsl(var(--border-lux))] shrink-0">
+            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-accent))] flex items-center justify-center shadow-lg animate-pulse-glow">
+              <Activity className="h-6 w-6 text-white" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-bold text-[hsl(var(--foreground))] truncate leading-tight">
+              <p className="text-base font-bold gradient-text truncate leading-tight">
                 نظام إدارة الأدوية
               </p>
-              <p className="text-[11px] text-[hsl(var(--muted-foreground))] leading-tight">
+              <p className="text-xs text-[hsl(var(--muted-foreground))] leading-tight font-medium">
                 Pharmacy Management
               </p>
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {/* Navigation - Premium Styling */}
+          <nav className="flex-1 px-3 py-5 space-y-1.5 overflow-y-auto">
             {navigation.map((item) => (
               <NavLink
                 key={item.name}
@@ -76,30 +75,30 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 onClick={onClose}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 relative',
+                    'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 relative group',
                     'cursor-pointer select-none',
                     isActive
-                      ? 'bg-[hsl(var(--primary)/0.08)] text-[hsl(var(--primary))] font-semibold'
-                      : 'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--foreground))]'
+                      ? 'bg-gradient-to-r from-[hsl(var(--primary)/0.15)] to-[hsl(var(--primary-accent)/0.1)] text-[hsl(var(--primary))] font-semibold shadow-md'
+                      : 'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--foreground))] hover:shadow-sm'
                   )
                 }
               >
                 {({ isActive }) => (
                   <>
                     {isActive && (
-                      <span className="absolute right-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[hsl(var(--primary))] rounded-l-full" />
+                      <span className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-[hsl(var(--primary))] to-[hsl(var(--primary-accent))] rounded-l-full shadow-lg" />
                     )}
-                    <item.icon className={cn("h-4.5 w-4.5 shrink-0", isActive ? "text-[hsl(var(--primary))]" : "")} />
-                    <span>{item.name}</span>
+                    <item.icon className={cn("h-5 w-5 shrink-0 transition-transform duration-300", isActive ? "text-[hsl(var(--primary))]" : "group-hover:scale-110")} />
+                    <span className="transition-colors duration-300">{item.name}</span>
                   </>
                 )}
               </NavLink>
             ))}
           </nav>
 
-          {/* Footer */}
-          <div className="px-5 py-3.5 border-t border-[hsl(var(--border))] shrink-0">
-            <p className="text-[11px] text-[hsl(var(--muted-foreground))] text-center">
+          {/* Footer - Luxury Glass */}
+          <div className="px-5 py-4 border-t border-[hsl(var(--border-lux))] shrink-0">
+            <p className="text-xs text-[hsl(var(--muted-foreground))] text-center font-medium">
               © 2025 نظام إدارة الأدوية
             </p>
           </div>

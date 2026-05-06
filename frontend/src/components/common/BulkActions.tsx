@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { Trash2, Download, X } from 'lucide-react';
 import Button from './Button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
@@ -12,7 +12,7 @@ interface BulkActionsProps {
   totalCount: number;
 }
 
-export default function BulkActions({
+function BulkActions({
   selectedIds,
   onBulkDelete,
   onBulkExport,
@@ -146,3 +146,5 @@ export default function BulkActions({
     </>
   );
 }
+
+export default memo(BulkActions);

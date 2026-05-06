@@ -5,7 +5,6 @@ interface UserPreferences {
   language: 'ar' | 'en';
   tableDensity: 'compact' | 'comfortable' | 'spacious';
   pageSize: number;
-  notifications: boolean;
   autoSave: boolean;
 }
 
@@ -20,7 +19,6 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   language: 'ar',
   tableDensity: 'comfortable',
   pageSize: 25,
-  notifications: true,
   autoSave: true,
 };
 

@@ -1,10 +1,14 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');
 
 /* Modern Design System - Tailwind Patterns v4 Principles */
 @layer base {
   :root {
-    /* Premium Dark Mode Color Palette - Ethereal Glass Aesthetic */
+    /* Luxury Medical Palette - Precision Calm */
     --bg-deep: 220 15% 5%;
     --bg-surface: 220 20% 8%;
     --bg-elevated: 220 25% 12%;
@@ -14,10 +18,17 @@
     --card-foreground: 220 10% 95%;
     --popover: var(--bg-surface);
     --popover-foreground: 220 10% 95%;
-    --primary: 270 70% 55%;
+
+    /* Deep medical purple - authority */
+    --primary: 265 65% 52%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 270 70% 50%;
-    --primary-glow: 270 70% 45%;
+    --primary-hover: 265 65% 48%;
+    --primary-glow: 265 70% 45%;
+    /* Lighter purple glow */
+    --primary-accent: 280 70% 58%;
+    /* Muted gold for premium accents */
+    --gold-subtle: 45 65% 55%;
+
     --secondary: 220 25% 15%;
     --secondary-foreground: 220 10% 95%;
     --muted: 220 25% 15%;
@@ -29,10 +40,15 @@
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
     --border: 220 15% 20%;
-    --border-glow: 270 50% 30%;
+    /* Subtle purple-tinted borders */
+    --border-lux: 265 30% 25%;
+    --border-glow: 265 50% 30%;
     --input: var(--bg-elevated);
-    --ring: 270 70% 55%;
+    --ring: 265 65% 52%;
     --radius: 0.75rem;
+
+    /* Glass morphism base */
+    --surface-glass: 220 20% 6% / 0.7;
 
     /* Semantic shadow depths - Dark Mode */
     --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -64,7 +80,7 @@
   }
 
   .light {
-    /* Premium Light Mode Color Palette - Soft Structuralism Aesthetic */
+    /* Luxury Light Mode - Precision Calm */
     --bg-deep: 45 20% 98%;
     --bg-surface: 45 15% 100%;
     --bg-elevated: 45 10% 100%;
@@ -74,10 +90,17 @@
     --card-foreground: 30 15% 15%;
     --popover: var(--bg-surface);
     --popover-foreground: 30 15% 15%;
-    --primary: 270 70% 55%;
+
+    /* Deep medical purple - authority */
+    --primary: 265 65% 52%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 270 70% 50%;
-    --primary-glow: 270 70% 45%;
+    --primary-hover: 265 65% 48%;
+    --primary-glow: 265 70% 45%;
+    /* Lighter purple glow */
+    --primary-accent: 280 70% 58%;
+    /* Muted gold for premium accents */
+    --gold-subtle: 45 65% 55%;
+
     --secondary: 45 15% 95%;
     --secondary-foreground: 30 15% 15%;
     --muted: 45 15% 95%;
@@ -89,10 +112,15 @@
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
     --border: 45 15% 88%;
-    --border-glow: 270 50% 40%;
+    /* Subtle purple-tinted borders */
+    --border-lux: 265 30% 85%;
+    --border-glow: 265 50% 40%;
     --input: var(--bg-elevated);
-    --ring: 270 70% 55%;
+    --ring: 265 65% 52%;
     --radius: 0.75rem;
+
+    /* Glass morphism base - light mode */
+    --surface-glass: 45 15% 100% / 0.8;
 
     /* Semantic shadow depths - Light Mode (softer, diffused) */
     --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -123,6 +151,22 @@
     font-size: 16px;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
+
+  /* Typography Hierarchy - Luxury Medical */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', 'Cairo', serif;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
+  }
+
+  h1 { font-size: clamp(1.75rem, 3vw + 0.75rem, 2.5rem); }
+  h2 { font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2rem); }
+  h3 { font-size: clamp(1.25rem, 2vw + 0.4rem, 1.75rem); }
+  h4 { font-size: clamp(1.1rem, 1.5vw + 0.3rem, 1.5rem); }
+  h5 { font-size: 1.25rem; }
+  h6 { font-size: 1.1rem; }
 
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -632,4 +676,274 @@
 
 .input-modern:hover {
   border-color: hsl(var(--border-glow));
+}
+
+/* ─── Luxury Design System - Precision Calm ───────────────────────────────────────────────────── */
+
+/* Glass Morphism Panels */
+.glass-panel {
+  background: hsl(var(--surface-glass));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid hsl(var(--border-lux));
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
+  transition: all 0.3s var(--ease-premium);
+}
+
+.glass-panel:hover {
+  border-color: hsl(var(--border-glow));
+  box-shadow: 0 12px 48px rgba(139, 92, 246, 0.15);
+}
+
+/* Purple Glow Border */
+.glow-border {
+  position: relative;
+  z-index: 1;
+}
+
+.glow-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg,
+    hsl(var(--primary)),
+    hsl(var(--primary-accent)),
+    hsl(var(--primary)));
+  background-size: 200% 200%;
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-premium);
+  animation: gradient-shift 3s ease infinite;
+}
+
+.glow-border:hover::before {
+  opacity: 0.6;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Premium Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg,
+    hsl(var(--primary)),
+    hsl(var(--primary-accent)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Luxury Card Variants */
+.card-luxury {
+  background: hsl(var(--surface-glass));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid hsl(var(--border-lux));
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.08);
+  transition: all 0.3s var(--ease-premium);
+}
+
+.card-luxury:hover {
+  transform: translateY(-4px);
+  border-color: hsl(var(--border-glow));
+  box-shadow: 0 16px 48px rgba(139, 92, 246, 0.12);
+}
+
+/* Premium Button Styles */
+.btn-luxury-primary {
+  background: linear-gradient(135deg,
+    hsl(var(--primary)),
+    hsl(var(--primary-accent)));
+  color: hsl(var(--primary-foreground));
+  border-radius: var(--radius-full);
+  padding: 0.875rem 2rem;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 4px 20px hsl(var(--primary) / 0.4);
+  transition: all 0.3s var(--ease-premium);
+  cursor: pointer;
+}
+
+.btn-luxury-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px hsl(var(--primary) / 0.5);
+}
+
+.btn-luxury-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-luxury-secondary {
+  background: hsl(var(--surface-glass));
+  backdrop-filter: blur(16px);
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border-lux));
+  border-radius: var(--radius-full);
+  padding: 0.875rem 2rem;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s var(--ease-premium);
+  cursor: pointer;
+}
+
+.btn-luxury-secondary:hover {
+  border-color: hsl(var(--border-glow));
+  background: hsl(var(--accent));
+  transform: translateY(-2px);
+}
+
+/* Premium Input Fields */
+.input-luxury {
+  background: hsl(var(--bg-elevated));
+  border: 1px solid hsl(var(--border-lux));
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  font-size: 0.95rem;
+  transition: all 0.3s var(--ease-premium);
+  color: hsl(var(--foreground));
+}
+
+.input-luxury:focus {
+  outline: none;
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.12),
+              0 4px 16px hsl(var(--primary) / 0.1);
+}
+
+.input-luxury:hover {
+  border-color: hsl(var(--border-glow));
+}
+
+/* Luxury Badge Styles */
+.badge-luxury {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid;
+  transition: all 0.2s var(--ease-premium);
+}
+
+.badge-luxury-active {
+  background: hsl(150 70% 92%);
+  color: hsl(150 80% 25%);
+  border-color: hsl(150 70% 75%);
+}
+
+.badge-luxury-inactive {
+  background: hsl(220 20% 92%);
+  color: hsl(220 15% 35%);
+  border-color: hsl(220 15% 85%);
+}
+
+.badge-luxury-warning {
+  background: hsl(85 70% 92%);
+  color: hsl(85 80% 25%);
+  border-color: hsl(85 70% 75%);
+}
+
+.badge-luxury-danger {
+  background: hsl(0 70% 92%);
+  color: hsl(0 80% 25%);
+  border-color: hsl(0 70% 75%);
+}
+
+.badge-luxury-primary {
+  background: hsl(265 70% 92%);
+  color: hsl(265 80% 25%);
+  border-color: hsl(265 70% 75%);
+}
+
+/* Enhanced Table Container with Glass Effect */
+.table-luxury-container {
+  background: hsl(var(--surface-glass));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid hsl(var(--border-lux));
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.08);
+}
+
+.table-luxury-container thead {
+  background: hsl(var(--muted) / 0.5);
+  backdrop-filter: blur(12px);
+}
+
+.table-luxury-container tbody tr {
+  transition: all 0.2s var(--ease-premium);
+  border-bottom: 1px solid hsl(var(--border-lux));
+}
+
+.table-luxury-container tbody tr:hover {
+  background: hsl(var(--accent) / 0.5);
+  border-color: hsl(var(--border-glow));
+}
+
+/* Premium Animations */
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px hsl(var(--primary) / 0.2); }
+  50% { box-shadow: 0 0 40px hsl(var(--primary) / 0.4); }
+}
+
+@keyframes slide-up-premium {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-float-gentle {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-slide-up-premium {
+  animation: slide-up-premium 0.5s var(--ease-premium) both;
+}
+
+/* Scrollbar - Luxury Style */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted) / 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg,
+    hsl(var(--primary)),
+    hsl(var(--primary-accent)));
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg,
+    hsl(var(--primary-accent)),
+    hsl(var(--primary)));
 }

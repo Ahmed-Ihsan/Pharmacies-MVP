@@ -90,6 +90,140 @@ Once running, access the auto-generated documentation:
 - **ReDoc**: http://localhost:8000/redoc
 - **Health Check**: http://localhost:8000/health
 
+## Docker Deployment
+
+### Prerequisites
+
+- Docker Desktop installed (https://www.docker.com/products/docker-desktop)
+- Docker Compose (included with Docker Desktop)
+
+### Quick Start with Docker
+
+#### 1. Build and Start Services
+
+```bash
+# Build and start all services (backend + frontend)
+docker-compose up --build
+
+# Or run in detached mode
+docker-compose up --build -d
+```
+
+#### 2. Access the Application
+
+Once running, access:
+
+- **Frontend**: http://localhost
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+- **Backend Health**: http://localhost:8000/health
+
+#### 3. Stop Services
+
+```bash
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes (deletes database)
+docker-compose down -v
+```
+
+### Docker Services
+
+The Docker Compose setup includes two services:
+
+- **backend**: FastAPI application (port 8000)
+  - Multi-stage build with Python 3.10
+  - Non-root user for security
+  - Health checks enabled
+  - SQLite database persisted in volume
+
+- **frontend**: React application (port 80)
+  - Multi-stage build with Node 20 and nginx
+  - Optimized production build
+  - API proxy to backend
+  - Static asset caching
+
+### Environment Configuration
+
+Create a `.env` file in the project root:
+
+```env
+SECRET_KEY=your-secret-key-here
+DATABASE_URL=sqlite:///./data/pharmacy.db
+DEBUG=True
+```
+
+### Docker Commands Reference
+
+```bash
+# View logs
+docker-compose logs -f
+
+# View specific service logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
+
+# Restart services
+docker-compose restart
+
+# Rebuild specific service
+docker-compose build backend
+docker-compose up -d backend
+
+# Execute commands in container
+docker-compose exec backend python -m pytest tests/
+docker-compose exec backend alembic upgrade head
+```
+
+### Installing on Another PC
+
+To deploy this application on another PC:
+
+1. **Clone or copy the project directory**
+   ```bash
+   git clone <repository-url>
+   cd cydl
+   ```
+
+2. **Ensure Docker is installed** on the target PC
+
+3. **Build and start the application**
+   ```bash
+   docker-compose up --build -d
+   ```
+
+4. **Access the application** at http://localhost
+
+5. **Initialize the database** (if not auto-created)
+   ```bash
+   docker-compose exec backend python scripts/init_database.py
+   docker-compose exec backend python scripts/seed_data.py
+   ```
+
+### Troubleshooting
+
+**Port conflicts**: If ports 80 or 8000 are in use, modify the ports in `docker-compose.yml`
+
+```yaml
+services:
+  backend:
+    ports:
+      - "8001:8000"  # Change to 8001
+  frontend:
+    ports:
+      - "8080:80"    # Change to 8080
+```
+
+**Database not persisting**: Ensure the `data/` directory exists and has proper permissions
+
+**Build failures**: Clear Docker cache and rebuild
+```bash
+docker-compose down -v
+docker system prune -a
+docker-compose up --build
+```
+
 ## API Endpoints
 
 For complete API documentation with all endpoints, request/response schemas, and examples, see **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)**

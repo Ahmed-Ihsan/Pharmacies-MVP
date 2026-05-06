@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import Button from './Button';
 
@@ -8,19 +9,17 @@ interface EnhancedPaginationProps {
   totalItems: number;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
-  pageSizeOptions?: number[];
 }
 
-const DEFAULT_PAGE_SIZES = [10, 25, 50, 100];
+const pageSizeOptions = [10, 25, 50, 100];
 
-export default function EnhancedPagination({
+function EnhancedPagination({
   currentPage,
   totalPages,
   pageSize,
   totalItems,
   onPageChange,
-  onPageSizeChange,
-  pageSizeOptions = DEFAULT_PAGE_SIZES,
+  onPageSizeChange
 }: EnhancedPaginationProps) {
   const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const endItem = Math.min(currentPage * pageSize, totalItems);
@@ -110,7 +109,7 @@ export default function EnhancedPagination({
           {getPageNumbers().map((page, index) => (
             typeof page === 'number' ? (
               <Button
-                key={index}
+                key={`page-${page}`}
                 variant={page === currentPage ? 'primary' : 'outline'}
                 size="sm"
                 onClick={() => onPageChange(page)}
@@ -119,7 +118,7 @@ export default function EnhancedPagination({
                 {page}
               </Button>
             ) : (
-              <span key={index} className="px-2 text-[hsl(var(--muted-foreground))]">
+              <span key={`ellipsis-${index}`} className="px-2 text-[hsl(var(--muted-foreground))]">
                 {page}
               </span>
             )
@@ -170,3 +169,5 @@ export default function EnhancedPagination({
     </div>
   );
 }
+
+export default memo(EnhancedPagination);

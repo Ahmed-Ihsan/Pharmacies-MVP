@@ -179,9 +179,9 @@ frontend/tsconfig.tsbuildinfo
 .DS_Store
 
 # IDE-specific configs
+.skills/
 .agents/
 .windsurfrules
-.skills/
 
 # Database
 *.db

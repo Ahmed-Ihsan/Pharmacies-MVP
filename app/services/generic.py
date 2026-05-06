@@ -30,7 +30,7 @@ class GenericService:
 
         therapeutic_class_name = None
         if obj.therapeutic_class:
-            therapeutic_class_name = obj.therapeutic_class.name
+            therapeutic_class_name = obj.therapeutic_class.class_name
 
         return GenericDrugWithDetails(
             **obj.__dict__,

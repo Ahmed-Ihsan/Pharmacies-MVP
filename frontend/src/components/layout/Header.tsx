@@ -1,9 +1,7 @@
-import { Bell, Search, LogOut, Menu, X, Sun, Moon } from 'lucide-react';
-import { useState } from 'react';
+import { Search, LogOut, Menu, X, Sun, Moon } from 'lucide-react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useNotifications } from '../../context/NotificationContext';
 import { useUserPreferences } from '../../context/UserPreferencesContext';
-import NotificationDropdown from './NotificationDropdown';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -12,22 +10,20 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick, isSidebarOpen }: HeaderProps) {
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-  const { unreadCount } = useNotifications();
   const { preferences, updatePreferences } = useUserPreferences();
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     updatePreferences({ theme: preferences.theme === 'light' ? 'dark' : 'light' });
-  };
+  }, [preferences.theme, updatePreferences]);
 
-  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleSearch = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
     }
-  };
+  }, [searchQuery, navigate]);
 
   return (
     <header className="h-16 bg-[hsl(var(--card))] border-b border-[hsl(var(--border))] flex items-center justify-between px-5 sticky top-0 z-40 shrink-0">
@@ -54,7 +50,7 @@ export default function Header({ onMenuClick, isSidebarOpen }: HeaderProps) {
         </div>
       </div>
 
-      {/* Right side - Theme Toggle, Notifications and User */}
+      {/* Right side - Theme Toggle and User */}
       <div className="flex items-center gap-1.5">
         {/* Theme Toggle */}
         <button
@@ -68,26 +64,6 @@ export default function Header({ onMenuClick, isSidebarOpen }: HeaderProps) {
             <Sun className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12" />
           )}
         </button>
-
-        {/* Notifications */}
-        <div className="relative">
-          <button
-            onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2.5 hover:bg-[hsl(var(--accent))] rounded-lg transition-colors text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
-            aria-label="Notifications"
-          >
-            <Bell className="h-5 w-5" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 h-4 w-4 bg-[hsl(var(--primary))] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </button>
-          <NotificationDropdown
-            isOpen={showNotifications}
-            onClose={() => setShowNotifications(false)}
-          />
-        </div>
 
         <div className="w-px h-5 bg-[hsl(var(--border))] mx-1" />
 

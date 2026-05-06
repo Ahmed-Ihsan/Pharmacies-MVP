@@ -1,42 +1,37 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
+import Loading from './components/common/Loading';
 
-// Generics
-import GenericList from './pages/generics/GenericList';
-import GenericDetail from './pages/generics/GenericDetail';
-import GenericFormPage from './pages/generics/GenericFormPage';
+// Lazy loaded pages
+const GenericList = lazy(() => import('./pages/generics/GenericList'));
+const GenericDetail = lazy(() => import('./pages/generics/GenericDetail'));
+const GenericFormPage = lazy(() => import('./pages/generics/GenericFormPage'));
 
-// Brands
-import BrandList from './pages/brands/BrandList';
-import BrandDetail from './pages/brands/BrandDetail';
-import BrandFormPage from './pages/brands/BrandFormPage';
+const BrandList = lazy(() => import('./pages/brands/BrandList'));
+const BrandDetail = lazy(() => import('./pages/brands/BrandDetail'));
+const BrandFormPage = lazy(() => import('./pages/brands/BrandFormPage'));
 
-// Manufacturers
-import ManufacturerList from './pages/manufacturers/ManufacturerList';
-import ManufacturerDetail from './pages/manufacturers/ManufacturerDetail';
-import ManufacturerFormPage from './pages/manufacturers/ManufacturerFormPage';
+const ManufacturerList = lazy(() => import('./pages/manufacturers/ManufacturerList'));
+const ManufacturerDetail = lazy(() => import('./pages/manufacturers/ManufacturerDetail'));
+const ManufacturerFormPage = lazy(() => import('./pages/manufacturers/ManufacturerFormPage'));
 
-// Therapeutic Classes
-import TherapeuticClassList from './pages/therapeutic-classes/TherapeuticClassList';
-import TherapeuticClassDetail from './pages/therapeutic-classes/TherapeuticClassDetail';
-import TherapeuticClassFormPage from './pages/therapeutic-classes/TherapeuticClassFormPage';
+const TherapeuticClassList = lazy(() => import('./pages/therapeutic-classes/TherapeuticClassList'));
+const TherapeuticClassDetail = lazy(() => import('./pages/therapeutic-classes/TherapeuticClassDetail'));
+const TherapeuticClassFormPage = lazy(() => import('./pages/therapeutic-classes/TherapeuticClassFormPage'));
 
-// Dosage Forms
-import DosageFormList from './pages/dosage-forms/DosageFormList';
-import DosageFormDetail from './pages/dosage-forms/DosageFormDetail';
-import DosageFormFormPage from './pages/dosage-forms/DosageFormFormPage';
+const DosageFormList = lazy(() => import('./pages/dosage-forms/DosageFormList'));
+const DosageFormDetail = lazy(() => import('./pages/dosage-forms/DosageFormDetail'));
+const DosageFormFormPage = lazy(() => import('./pages/dosage-forms/DosageFormFormPage'));
 
-// Alternatives
-import AlternativeList from './pages/alternatives/AlternativeList';
-import AlternativeFormPage from './pages/alternatives/AlternativeFormPage';
+const AlternativeList = lazy(() => import('./pages/alternatives/AlternativeList'));
+const AlternativeFormPage = lazy(() => import('./pages/alternatives/AlternativeFormPage'));
 
-// Prices
-import PriceList from './pages/prices/PriceList';
-import PriceFormPage from './pages/prices/PriceFormPage';
+const PriceList = lazy(() => import('./pages/prices/PriceList'));
+const PriceFormPage = lazy(() => import('./pages/prices/PriceFormPage'));
 
-// Search
-import SearchResults from './pages/search/SearchResults';
+const SearchResults = lazy(() => import('./pages/search/SearchResults'));
 
 const router = createBrowserRouter([
   {
@@ -46,47 +41,47 @@ const router = createBrowserRouter([
       { index: true, element: <Dashboard /> },
 
       // Generics — uses: GET /generics/, GET /generics/{id}, GET /generics/{id}/alternatives, POST, PUT /generics/
-      { path: 'generics', element: <GenericList /> },
-      { path: 'generics/new', element: <GenericFormPage /> },
-      { path: 'generics/:id', element: <GenericDetail /> },
-      { path: 'generics/:id/edit', element: <GenericFormPage /> },
+      { path: 'generics', element: <Suspense fallback={<Loading />}><GenericList /></Suspense> },
+      { path: 'generics/new', element: <Suspense fallback={<Loading />}><GenericFormPage /></Suspense> },
+      { path: 'generics/:id', element: <Suspense fallback={<Loading />}><GenericDetail /></Suspense> },
+      { path: 'generics/:id/edit', element: <Suspense fallback={<Loading />}><GenericFormPage /></Suspense> },
 
       // Brands — uses: GET /brands/, GET /brands/{id}, GET /brands/{id}/prices, GET /brands/by-ndc, GET /brands/by-barcode, POST, PUT, DELETE
-      { path: 'brands', element: <BrandList /> },
-      { path: 'brands/new', element: <BrandFormPage /> },
-      { path: 'brands/:id', element: <BrandDetail /> },
-      { path: 'brands/:id/edit', element: <BrandFormPage /> },
+      { path: 'brands', element: <Suspense fallback={<Loading />}><BrandList /></Suspense> },
+      { path: 'brands/new', element: <Suspense fallback={<Loading />}><BrandFormPage /></Suspense> },
+      { path: 'brands/:id', element: <Suspense fallback={<Loading />}><BrandDetail /></Suspense> },
+      { path: 'brands/:id/edit', element: <Suspense fallback={<Loading />}><BrandFormPage /></Suspense> },
 
       // Manufacturers — uses: GET /manufacturers/, GET /manufacturers/{id}, POST, PUT, DELETE
-      { path: 'manufacturers', element: <ManufacturerList /> },
-      { path: 'manufacturers/new', element: <ManufacturerFormPage /> },
-      { path: 'manufacturers/:id', element: <ManufacturerDetail /> },
-      { path: 'manufacturers/:id/edit', element: <ManufacturerFormPage /> },
+      { path: 'manufacturers', element: <Suspense fallback={<Loading />}><ManufacturerList /></Suspense> },
+      { path: 'manufacturers/new', element: <Suspense fallback={<Loading />}><ManufacturerFormPage /></Suspense> },
+      { path: 'manufacturers/:id', element: <Suspense fallback={<Loading />}><ManufacturerDetail /></Suspense> },
+      { path: 'manufacturers/:id/edit', element: <Suspense fallback={<Loading />}><ManufacturerFormPage /></Suspense> },
 
       // Therapeutic Classes — uses: GET /, GET /roots, GET /{id}/children, GET /{id}, POST, PUT, DELETE
-      { path: 'therapeutic-classes', element: <TherapeuticClassList /> },
-      { path: 'therapeutic-classes/new', element: <TherapeuticClassFormPage /> },
-      { path: 'therapeutic-classes/:id', element: <TherapeuticClassDetail /> },
-      { path: 'therapeutic-classes/:id/edit', element: <TherapeuticClassFormPage /> },
+      { path: 'therapeutic-classes', element: <Suspense fallback={<Loading />}><TherapeuticClassList /></Suspense> },
+      { path: 'therapeutic-classes/new', element: <Suspense fallback={<Loading />}><TherapeuticClassFormPage /></Suspense> },
+      { path: 'therapeutic-classes/:id', element: <Suspense fallback={<Loading />}><TherapeuticClassDetail /></Suspense> },
+      { path: 'therapeutic-classes/:id/edit', element: <Suspense fallback={<Loading />}><TherapeuticClassFormPage /></Suspense> },
 
       // Dosage Forms — uses: GET /dosage-forms/, GET /{id}, POST, PUT, DELETE
-      { path: 'dosage-forms', element: <DosageFormList /> },
-      { path: 'dosage-forms/new', element: <DosageFormFormPage /> },
-      { path: 'dosage-forms/:id', element: <DosageFormDetail /> },
-      { path: 'dosage-forms/:id/edit', element: <DosageFormFormPage /> },
+      { path: 'dosage-forms', element: <Suspense fallback={<Loading />}><DosageFormList /></Suspense> },
+      { path: 'dosage-forms/new', element: <Suspense fallback={<Loading />}><DosageFormFormPage /></Suspense> },
+      { path: 'dosage-forms/:id', element: <Suspense fallback={<Loading />}><DosageFormDetail /></Suspense> },
+      { path: 'dosage-forms/:id/edit', element: <Suspense fallback={<Loading />}><DosageFormFormPage /></Suspense> },
 
       // Alternatives — uses: GET /alternatives/, GET /{id}, POST, PUT, DELETE
-      { path: 'alternatives', element: <AlternativeList /> },
-      { path: 'alternatives/new', element: <AlternativeFormPage /> },
-      { path: 'alternatives/:id/edit', element: <AlternativeFormPage /> },
+      { path: 'alternatives', element: <Suspense fallback={<Loading />}><AlternativeList /></Suspense> },
+      { path: 'alternatives/new', element: <Suspense fallback={<Loading />}><AlternativeFormPage /></Suspense> },
+      { path: 'alternatives/:id/edit', element: <Suspense fallback={<Loading />}><AlternativeFormPage /></Suspense> },
 
       // Prices — uses: GET /prices/by-brand/{id}, GET /prices/active/{id}, GET /{id}, POST, PUT, DELETE
-      { path: 'prices', element: <PriceList /> },
-      { path: 'prices/new', element: <PriceFormPage /> },
-      { path: 'prices/:id/edit', element: <PriceFormPage /> },
+      { path: 'prices', element: <Suspense fallback={<Loading />}><PriceList /></Suspense> },
+      { path: 'prices/new', element: <Suspense fallback={<Loading />}><PriceFormPage /></Suspense> },
+      { path: 'prices/:id/edit', element: <Suspense fallback={<Loading />}><PriceFormPage /></Suspense> },
 
       // Search — uses: GET /brands/by-ndc/{ndc}, GET /brands/by-barcode/{barcode}, GET /generics/ + GET /brands/
-      { path: 'search', element: <SearchResults /> },
+      { path: 'search', element: <Suspense fallback={<Loading />}><SearchResults /></Suspense> },
     ],
   },
 ]);
