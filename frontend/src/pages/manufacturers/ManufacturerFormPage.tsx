@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { ArrowRight, Building2, Save, Loader2, Zap } from 'lucide-react';
+import { ArrowRight, Building2, Save, Loader2, Zap, Building, FileText, Globe, Phone, Mail, MapPin, CheckCircle2, ChevronDown } from 'lucide-react';
 import { manufacturerService } from '../../services/manufacturerService';
 import Button from '../../components/common/Button';
 import Loading from '../../components/common/Loading';
@@ -30,13 +30,16 @@ interface FieldProps {
   ltr?: boolean;
   type?: string;
   placeholder?: string;
+  icon?: React.ReactNode;
 }
 
-function Field({ label, name, value, onChange, required, ltr, type = 'text', placeholder }: FieldProps) {
+function Field({ label, name, value, onChange, required, ltr, type = 'text', placeholder, icon }: FieldProps) {
   return (
     <div className="space-y-2">
-      <label className="block text-xs font-medium tracking-wide uppercase text-[hsl(var(--text-secondary))] mb-2">
-        {label}{required && <span className="text-red-400 mr-1">*</span>}
+      <label className="flex items-center gap-2 text-xs font-semibold tracking-wide uppercase text-[hsl(var(--text-secondary))]">
+        <span className="text-[hsl(var(--primary))]">{icon}</span>
+        {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <div className="relative group">
         <input
@@ -46,9 +49,12 @@ function Field({ label, name, value, onChange, required, ltr, type = 'text', pla
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder || label}
           dir={ltr ? 'ltr' : 'rtl'}
-          className="w-full h-12 px-4 rounded-xl bg-[hsl(var(--bg-elevated))] border border-[hsl(var(--border))] text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))]/50 focus:outline-none focus:border-[hsl(var(--primary))] focus:shadow-[0_0_0_4px_hsl(var(--primary)/0.1)] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-sm group-hover:border-[hsl(var(--border-glow))]"
+          className="w-full h-12 px-4 pr-12 rounded-xl bg-[hsl(var(--bg-elevated))] border-2 border-[hsl(var(--border))] text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))]/40 focus:outline-none focus:border-[hsl(var(--primary))] focus:ring-4 focus:ring-[hsl(var(--primary)/0.1)] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-sm font-medium group-hover:border-[hsl(var(--border-glow))] group-hover:shadow-lg"
         />
-        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[hsl(var(--primary)/0.05)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[hsl(var(--primary))]">
+          {icon}
+        </div>
+        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[hsl(var(--primary)/0.03)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
       </div>
     </div>
   );
@@ -247,22 +253,31 @@ export default function ManufacturerFormPage() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <Field label="اسم الشركة" name="manufacturer_name" value={form.manufacturer_name} onChange={set('manufacturer_name')} required ltr />
-                <Field label="رقم الترخيص" name="license_number" value={form.license_number} onChange={set('license_number')} ltr />
+                <Field label="اسم الشركة" name="manufacturer_name" value={form.manufacturer_name} onChange={set('manufacturer_name')} required ltr icon={<Building className="h-4 w-4" />} />
+                <Field label="رقم الترخيص" name="license_number" value={form.license_number} onChange={set('license_number')} ltr icon={<FileText className="h-4 w-4" />} />
               </div>
               
               <div className="space-y-2">
-                <label className="block text-xs font-medium tracking-wide uppercase text-[hsl(var(--text-secondary))] mb-2">الدولة</label>
+                <label className="flex items-center gap-2 text-xs font-semibold tracking-wide uppercase text-[hsl(var(--text-secondary))]">
+                  <span className="text-[hsl(var(--primary))]"><Globe className="h-4 w-4" /></span>
+                  الدولة
+                </label>
                 <div className="relative group">
                   <select
                     value={form.country_code}
                     onChange={(e) => set('country_code')(e.target.value)}
-                    className="w-full h-11 sm:h-12 px-4 rounded-xl bg-[hsl(var(--bg-elevated))] border border-[hsl(var(--border))] text-[hsl(var(--text-primary))] focus:outline-none focus:border-[hsl(var(--primary))] focus:shadow-[0_0_0_4px_hsl(var(--primary)/0.1)] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-sm appearance-none cursor-pointer group-hover:border-[hsl(var(--border-glow))]"
+                    className="w-full h-12 px-4 pr-12 rounded-xl bg-[hsl(var(--bg-elevated))] border-2 border-[hsl(var(--border))] text-[hsl(var(--text-primary))] focus:outline-none focus:border-[hsl(var(--primary))] focus:ring-4 focus:ring-[hsl(var(--primary)/0.1)] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-sm font-medium appearance-none cursor-pointer group-hover:border-[hsl(var(--border-glow))] group-hover:shadow-lg"
                   >
                     <option value="">-- اختر الدولة --</option>
                     {COUNTRIES.map((c) => <option key={c} value={c}>{COUNTRY_LABELS[c] || c}</option>)}
                   </select>
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[hsl(var(--primary)/0.05)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[hsl(var(--primary))]">
+                    <Globe className="h-4 w-4" />
+                  </div>
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[hsl(var(--text-secondary))]/40 pointer-events-none">
+                    <ChevronDown className="h-4 w-4" />
+                  </div>
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[hsl(var(--primary)/0.03)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 </div>
               </div>
 
@@ -275,23 +290,32 @@ export default function ManufacturerFormPage() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <Field label="البريد الإلكتروني" name="email" value={form.email} onChange={set('email')} ltr type="email" />
-                <Field label="الهاتف" name="phone" value={form.phone} onChange={set('phone')} ltr type="tel" />
-                <Field label="العنوان" name="address" value={form.address} onChange={set('address')} />
+                <Field label="البريد الإلكتروني" name="email" value={form.email} onChange={set('email')} ltr type="email" icon={<Mail className="h-4 w-4" />} />
+                <Field label="الهاتف" name="phone" value={form.phone} onChange={set('phone')} ltr type="tel" icon={<Phone className="h-4 w-4" />} />
+                <Field label="العنوان" name="address" value={form.address} onChange={set('address')} icon={<MapPin className="h-4 w-4" />} />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-xs font-medium tracking-wide uppercase text-[hsl(var(--text-secondary))] mb-2">الحالة</label>
+                <label className="flex items-center gap-2 text-xs font-semibold tracking-wide uppercase text-[hsl(var(--text-secondary))]">
+                  <span className="text-[hsl(var(--primary))]"><CheckCircle2 className="h-4 w-4" /></span>
+                  الحالة
+                </label>
                 <div className="relative group">
                   <select
                     value={form.status}
                     onChange={(e) => set('status')(e.target.value)}
-                    className="w-full h-11 sm:h-12 px-4 rounded-xl bg-[hsl(var(--bg-elevated))] border border-[hsl(var(--border))] text-[hsl(var(--text-primary))] focus:outline-none focus:border-[hsl(var(--primary))] focus:shadow-[0_0_0_4px_hsl(var(--primary)/0.1)] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-sm appearance-none cursor-pointer group-hover:border-[hsl(var(--border-glow))]"
+                    className="w-full h-12 px-4 pr-12 rounded-xl bg-[hsl(var(--bg-elevated))] border-2 border-[hsl(var(--border))] text-[hsl(var(--text-primary))] focus:outline-none focus:border-[hsl(var(--primary))] focus:ring-4 focus:ring-[hsl(var(--primary)/0.1)] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-sm font-medium appearance-none cursor-pointer group-hover:border-[hsl(var(--border-glow))] group-hover:shadow-lg"
                   >
                     <option value="active">نشط</option>
                     <option value="suspended">غير نشط</option>
                   </select>
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[hsl(var(--primary)/0.05)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[hsl(var(--primary))]">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </div>
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[hsl(var(--text-secondary))]/40 pointer-events-none">
+                    <ChevronDown className="h-4 w-4" />
+                  </div>
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[hsl(var(--primary)/0.03)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 </div>
               </div>
             </div>

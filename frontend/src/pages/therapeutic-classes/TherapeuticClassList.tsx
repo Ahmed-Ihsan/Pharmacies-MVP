@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Eye, Edit2, Trash2, FolderTree, AlertTriangle, Search } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Plus, Edit2, Trash2, FolderTree, AlertTriangle, Search } from 'lucide-react';
 import { therapeuticClassService } from '../../services/therapeuticClassService';
 import SearchBar from '../../components/common/SearchBar';
 import Button from '../../components/common/Button';
@@ -9,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from '../../components/ui/use-toast';
 import { TRANSLATIONS, DEFAULT_PAGE_SIZE } from '../../utils/constants';
 import type { PaginatedResponse } from '../../types/common';
-import type { TherapeuticClass } from '../../types/therapeuticClass';
+import type { TherapeuticClass, TherapeuticClassCreate, TherapeuticClassUpdate } from '../../types/therapeuticClass';
 
 export default function TherapeuticClassList() {
   const [search, setSearch] = useState('');
@@ -19,6 +18,15 @@ export default function TherapeuticClassList() {
   const [error, setError] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+  const [formModalOpen, setFormModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<TherapeuticClass | null>(null);
+  const [formLoading, setFormLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    class_code: '',
+    class_name: '',
+    parent_class_id: '',
+    description: '',
+  });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -66,7 +74,62 @@ export default function TherapeuticClassList() {
     }
   };
 
-  const getItemId = (item: TherapeuticClass) => (item as any).class_id ?? item.id ?? 0;
+  const getItemId = (item: TherapeuticClass) => item.class_id ?? 0;
+
+  const openFormModal = (item: TherapeuticClass | null = null) => {
+    setEditingItem(item);
+    if (item) {
+      setFormData({
+        class_code: item.class_code,
+        class_name: item.class_name,
+        parent_class_id: item.parent_class_id?.toString() || '',
+        description: item.description || '',
+      });
+    } else {
+      setFormData({ class_code: '', class_name: '', parent_class_id: '', description: '' });
+    }
+    setFormModalOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.class_code || !formData.class_name) {
+      toast({ title: 'خطأ', description: 'الرمز والاسم مطلوبان', variant: 'destructive' });
+      return;
+    }
+
+    setFormLoading(true);
+    try {
+      if (editingItem) {
+        const updateData: TherapeuticClassUpdate = {
+          class_code: formData.class_code,
+          class_name: formData.class_name,
+          parent_class_id: formData.parent_class_id ? parseInt(formData.parent_class_id) : undefined,
+          description: formData.description || undefined,
+        };
+        await therapeuticClassService.update(getItemId(editingItem), updateData);
+        toast({ title: 'تم التعديل بنجاح', description: 'تم تحديث التصنيف العلاجي' });
+      } else {
+        const createData: TherapeuticClassCreate = {
+          class_code: formData.class_code,
+          class_name: formData.class_name,
+          parent_class_id: formData.parent_class_id ? parseInt(formData.parent_class_id) : undefined,
+          description: formData.description || undefined,
+        };
+        await therapeuticClassService.create(createData);
+        toast({ title: 'تم الإضافة بنجاح', description: 'تم إضافة التصنيف العلاجي الجديد' });
+      }
+      setFormModalOpen(false);
+      setEditingItem(null);
+      setFormData({ class_code: '', class_name: '', parent_class_id: '', description: '' });
+      const response = await therapeuticClassService.list({ skip, limit: DEFAULT_PAGE_SIZE, search: search || undefined });
+      setData(response);
+    } catch (err: any) {
+      toast({ title: 'فشلت العملية', description: err.response?.data?.detail || 'حدث خطأ', variant: 'destructive' });
+    } finally {
+      setFormLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -100,12 +163,10 @@ export default function TherapeuticClassList() {
             <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">إدارة التصنيفات العلاجية للأدوية</p>
           </div>
         </div>
-        <Link to="/therapeutic-classes/new">
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            إضافة تصنيف
-          </Button>
-        </Link>
+        <Button className="gap-2" onClick={() => openFormModal(null)}>
+          <Plus className="h-4 w-4" />
+          إضافة تصنيف
+        </Button>
       </div>
 
       {/* Stats Card */}
@@ -173,7 +234,7 @@ export default function TherapeuticClassList() {
                     </td>
                   </tr>
                 ) : (
-                  data.items.map((item, index) => (
+                  data.items.map((item) => (
                     <tr key={getItemId(item)}>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-3">
@@ -182,8 +243,8 @@ export default function TherapeuticClassList() {
                           </div>
                           <div>
                             <p className="font-semibold text-[hsl(var(--foreground))]">{item.class_name}</p>
-                            {item.arabic_name && (
-                              <p className="text-xs text-[hsl(var(--muted-foreground))] mt-0.5">{item.arabic_name}</p>
+                            {item.description && (
+                              <p className="text-xs text-[hsl(var(--muted-foreground))] mt-0.5">{item.description}</p>
                             )}
                           </div>
                         </div>
@@ -198,27 +259,21 @@ export default function TherapeuticClassList() {
                         )}
                       </td>
                       <td className="px-4 py-4 text-[hsl(var(--foreground))]">
-                        {item.parent_name ? (
-                          <span className="inline-flex items-center gap-1 text-sm">
-                            <FolderTree className="h-3.5 w-3.5 text-[hsl(var(--muted-foreground))]" />
-                            {item.parent_name}
-                          </span>
+                        {item.parent_class_id ? (
+                          <span className="text-sm">{item.parent_class_id}</span>
                         ) : (
                           <span className="text-[hsl(var(--muted-foreground))] text-xs">رئيسي</span>
                         )}
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center justify-center gap-1.5">
-                          <Link to={`/therapeutic-classes/${getItemId(item)}`}>
-                            <button className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-[hsl(var(--primary))] text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors" title="عرض">
-                              <Eye className="h-3.5 w-3.5" />
-                            </button>
-                          </Link>
-                          <Link to={`/therapeutic-classes/${getItemId(item)}/edit`}>
-                            <button className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-amber-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors" title="تعديل">
-                              <Edit2 className="h-3.5 w-3.5" />
-                            </button>
-                          </Link>
+                          <button
+                            onClick={() => openFormModal(item)}
+                            className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-amber-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors"
+                            title="تعديل"
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                          </button>
                           <button
                             onClick={() => handleDeleteClick(getItemId(item))}
                             className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-red-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors"
@@ -263,6 +318,71 @@ export default function TherapeuticClassList() {
           )}
         </div>
       )}
+
+      {/* Form Modal */}
+      <Dialog open={formModalOpen} onOpenChange={setFormModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FolderTree className="h-5 w-5 text-[hsl(var(--primary))]" />
+              {editingItem ? 'تعديل التصنيف العلاجي' : 'إضافة تصنيف علاجي جديد'}
+            </DialogTitle>
+            <DialogDescription>
+              {editingItem ? 'تعديل بيانات التصنيف العلاجي' : 'أدخل بيانات التصنيف العلاجي الجديد'}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[hsl(var(--foreground))]">الرمز *</label>
+              <input
+                type="text"
+                value={formData.class_code}
+                onChange={(e) => setFormData({ ...formData, class_code: e.target.value })}
+                placeholder="مثال: A01"
+                required
+                className="w-full px-3 py-2 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]/30 focus:border-[hsl(var(--primary))]"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[hsl(var(--foreground))]">الاسم *</label>
+              <input
+                type="text"
+                value={formData.class_name}
+                onChange={(e) => setFormData({ ...formData, class_name: e.target.value })}
+                placeholder="مثال: Antibiotics"
+                required
+                className="w-full px-3 py-2 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]/30 focus:border-[hsl(var(--primary))]"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[hsl(var(--foreground))]">التصنيف الأب</label>
+              <input
+                type="number"
+                value={formData.parent_class_id}
+                onChange={(e) => setFormData({ ...formData, parent_class_id: e.target.value })}
+                placeholder="معرف التصنيف الأب (اختياري)"
+                className="w-full px-3 py-2 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]/30 focus:border-[hsl(var(--primary))]"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[hsl(var(--foreground))]">الوصف</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="وصف التصنيف العلاجي..."
+                rows={3}
+                className="w-full px-3 py-2 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]/30 focus:border-[hsl(var(--primary))] resize-none"
+              />
+            </div>
+          </form>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setFormModalOpen(false)}>إلغاء</Button>
+            <Button onClick={handleSubmit} loading={formLoading}>
+              {editingItem ? 'حفظ التعديلات' : 'إضافة'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

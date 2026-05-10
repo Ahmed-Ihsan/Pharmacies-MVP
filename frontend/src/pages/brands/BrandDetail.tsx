@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowRight, Tag, DollarSign, Pill, Building2, Container, ScanBarcode, Edit2, TrendingUp } from 'lucide-react';
+import { ArrowRight, Tag, DollarSign, Pill, Building2, Container, ScanBarcode, Edit2, TrendingUp, Plus, Trash2, AlertTriangle, Printer, Package } from 'lucide-react';
 import { brandService } from '../../services/brandService';
 import { priceService } from '../../services/priceService';
+import { inventoryService } from '../../services/inventoryService';
 import Button from '../../components/common/Button';
 import Loading from '../../components/common/Loading';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../components/ui/dialog';
+import { useToast } from '../../components/ui/use-toast';
 import { TRANSLATIONS } from '../../utils/constants';
 import { formatDate, formatIQD } from '../../utils/formatters';
 import type { BrandNameWithDetails } from '../../types/brand';
 import type { DrugPrice } from '../../types/price';
+import type { InventoryWithDetails } from '../../types/inventory';
 
 export default function BrandDetail() {
   const { id } = useParams<{ id: string }>();
@@ -16,21 +20,27 @@ export default function BrandDetail() {
 
   const [data, setData] = useState<BrandNameWithDetails | null>(null);
   const [prices, setPrices] = useState<DrugPrice[]>([]);
+  const [inventory, setInventory] = useState<InventoryWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [priceModalOpen, setPriceModalOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [priceToDelete, setPriceToDelete] = useState<number | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!numericId) return;
     const fetchAll = async () => {
       setLoading(true);
       try {
-        // GET /brands/{id} (includes embedded prices) and GET /brands/{id}/prices in parallel
-        const [brandData, priceData] = await Promise.all([
+        const [brandData, priceData, inventoryData] = await Promise.all([
           brandService.get(numericId),
           brandService.getPrices(numericId),
+          inventoryService.getByBrand(numericId).catch(() => null),
         ]);
         setData(brandData);
         setPrices(priceData);
+        setInventory(inventoryData);
       } catch (err: any) {
         setError(err.response?.data?.detail || 'حدث خطأ في تحميل البيانات');
       } finally {
@@ -57,6 +67,10 @@ export default function BrandDetail() {
   // Current price = most recent active price
   const currentPrice = prices.find((p: any) => p.is_active) || prices[0];
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Page Header */}
@@ -76,6 +90,10 @@ export default function BrandDetail() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handlePrint} className="gap-2">
+            <Printer className="h-4 w-4" />
+            طباعة
+          </Button>
           <Link to={`/brands/${brandId}/edit`}>
             <Button variant="outline" className="gap-2"><Edit2 className="h-4 w-4" />تعديل</Button>
           </Link>
@@ -183,20 +201,26 @@ export default function BrandDetail() {
 
         {/* Prices Card — uses GET /brands/{id}/prices */}
         <div className="bg-[hsl(var(--card))] rounded-xl border border-[hsl(var(--border))] shadow-[var(--shadow-sm)] p-6">
-          <h2 className="font-semibold text-[hsl(var(--foreground))] pb-3 border-b border-[hsl(var(--border))] mb-4 flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-[hsl(var(--primary))]" />
-            سجل الأسعار
-            {prices.length > 0 && (
-              <span className="mr-auto bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] text-xs font-bold px-2.5 py-0.5 rounded-full">{prices.length}</span>
-            )}
-          </h2>
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-[hsl(var(--border))]">
+            <h2 className="font-semibold text-[hsl(var(--foreground))] flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-[hsl(var(--primary))]" />
+              سجل الأسعار
+              {prices.length > 0 && (
+                <span className="bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] text-xs font-bold px-2.5 py-0.5 rounded-full">{prices.length}</span>
+              )}
+            </h2>
+            <Button variant="outline" size="sm" onClick={() => setPriceModalOpen(true)} className="gap-2">
+              <Plus className="h-4 w-4" />
+              إضافة سعر
+            </Button>
+          </div>
 
           {/* Current price highlight */}
           {currentPrice && (
             <div className="flex items-center justify-between p-4 mb-3 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(270_70%_45%)] rounded-lg text-white">
               <div>
                 <p className="text-white/90 text-xs">السعر الحالي</p>
-                <p className="text-2xl font-bold">{formatIQD(currentPrice.unit_price)}</p>
+                <p className="text-2xl font-bold">{formatIQD(currentPrice.selling_price)}</p>
                 <p className="text-white/80 text-xs mt-0.5">منذ {formatDate(currentPrice.effective_date)}</p>
               </div>
               <DollarSign className="h-10 w-10 text-white/20" />
@@ -208,13 +232,22 @@ export default function BrandDetail() {
               {prices.map((price: any) => (
                 <div key={price.price_id || price.id} className="flex items-center justify-between p-3 rounded-lg bg-[hsl(var(--muted))/0.4]">
                   <div>
-                    <p className="font-semibold text-sm text-[hsl(var(--foreground))]">{formatIQD(price.unit_price)}</p>
+                    <p className="font-semibold text-sm text-[hsl(var(--foreground))]">{formatIQD(price.selling_price)}</p>
                     <p className="text-xs text-[hsl(var(--muted-foreground))] mt-0.5">{formatDate(price.effective_date)}</p>
                     {price.notes && <p className="text-xs text-[hsl(var(--muted-foreground))] mt-0.5">{price.notes}</p>}
                   </div>
-                  {price.is_active && (
-                    <span className="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full font-medium">ساري</span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {price.is_active && (
+                      <span className="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full font-medium">ساري</span>
+                    )}
+                    <button
+                      onClick={() => setPriceToDelete(price.price_id || price.id)}
+                      className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-red-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors"
+                      title="حذف"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -222,16 +255,123 @@ export default function BrandDetail() {
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <DollarSign className="h-10 w-10 text-[hsl(var(--muted-foreground))] mb-3" />
               <p className="text-sm text-[hsl(var(--muted-foreground))]">لا توجد أسعار مسجلة</p>
-              <Link to={`/prices/new?brandId=${brandId}`} className="mt-3">
-                <Button variant="outline" size="sm" className="rounded-lg gap-1">
-                  <DollarSign className="h-3.5 w-3.5" />
-                  إضافة سعر
-                </Button>
-              </Link>
+              <Button variant="outline" size="sm" onClick={() => setPriceModalOpen(true)} className="mt-3">
+                إضافة سعر
+              </Button>
             </div>
           ) : null}
         </div>
+
+        {/* Inventory Card */}
+        {inventory && (
+          <div className="bg-[hsl(var(--card))] rounded-xl border border-[hsl(var(--border))] shadow-[var(--shadow-sm)] p-6 space-y-4">
+            <h2 className="font-semibold text-[hsl(var(--foreground))] pb-3 border-b border-[hsl(var(--border))] flex items-center gap-2">
+              <Package className="h-4 w-4 text-[hsl(var(--primary))]" />
+              المخزون
+            </h2>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[hsl(var(--muted-foreground))]">الكمية الحالية</span>
+                <span className="font-semibold text-[hsl(var(--foreground))]">{inventory.current_quantity}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[hsl(var(--muted-foreground))]">الحد الأدنى</span>
+                <span className="font-semibold text-[hsl(var(--foreground))]">{inventory.minimum_quantity}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[hsl(var(--muted-foreground))]">الحد الأقصى</span>
+                <span className="font-semibold text-[hsl(var(--foreground))]">{inventory.maximum_quantity}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[hsl(var(--muted-foreground))]">الحالة</span>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  inventory.status === 'available' ? 'bg-green-100 text-green-700' :
+                  inventory.status === 'low_stock' ? 'bg-amber-100 text-amber-700' :
+                  inventory.status === 'out_of_stock' ? 'bg-red-100 text-red-700' :
+                  'bg-gray-100 text-gray-700'
+                }`}>
+                  {inventory.status === 'available' ? 'متوفر' :
+                   inventory.status === 'low_stock' ? 'منخفض المخزون' :
+                   inventory.status === 'out_of_stock' ? 'نفذ من المخزون' :
+                   inventory.status}
+                </span>
+              </div>
+              {inventory.expiry_date && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[hsl(var(--muted-foreground))]">تاريخ الانتهاء</span>
+                  <span className="font-semibold text-[hsl(var(--foreground))]">{new Date(inventory.expiry_date).toLocaleDateString('ar-IQ')}</span>
+                </div>
+              )}
+              {inventory.location && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[hsl(var(--muted-foreground))]">الموقع</span>
+                  <span className="font-semibold text-[hsl(var(--foreground))]">{inventory.location}</span>
+                </div>
+              )}
+            </div>
+            <Link to="/inventory">
+              <Button variant="outline" size="sm" className="w-full gap-2">
+                <ArrowRight className="h-4 w-4" />
+                عرض جميع المخزون
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
+
+      {/* Delete Price Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-600" />
+              تأكيد الحذف
+            </DialogTitle>
+            <DialogDescription>
+              هل أنت متأكد من حذف هذا السعر؟ لا يمكن التراجع عن هذا الإجراء.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>إلغاء</Button>
+            <Button variant="danger" onClick={async () => {
+              if (!priceToDelete) return;
+              try {
+                await priceService.delete(priceToDelete);
+                setDeleteDialogOpen(false);
+                setPriceToDelete(null);
+                toast({ title: 'تم الحذف بنجاح', description: 'تم حذف السعر من النظام' });
+                const priceData = await brandService.getPrices(numericId!);
+                setPrices(priceData);
+              } catch (err: any) {
+                toast({ title: 'فشل الحذف', description: err.response?.data?.detail || 'فشل الحذف', variant: 'destructive' });
+              }
+            }}>حذف</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Price Modal */}
+      <Dialog open={priceModalOpen} onOpenChange={setPriceModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5 text-[hsl(var(--primary))]" />
+              إضافة سعر جديد
+            </DialogTitle>
+            <DialogDescription>
+              أدخل بيانات السعر الجديد لهذا الدواء التجاري
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              سيتم إضافة ميزة إدخال السعر هنا. حالياً يمكنك إضافة الأسعار من صفحة الأسعار.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPriceModalOpen(false)}>إلغاء</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

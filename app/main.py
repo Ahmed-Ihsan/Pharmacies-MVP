@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from app.api.v1.api import api_router
 from app.core.config import settings
 from app.core.exceptions import NotFoundException, DuplicateException, ValidationException
+from app.models import *  # Import all models to ensure they are registered with SQLAlchemy
 
 
 def create_application() -> FastAPI:

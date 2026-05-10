@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowRight, Pill, Tag, FolderTree, Calendar, FileText, ArrowLeftRight } from 'lucide-react';
+import { ArrowRight, Pill, Tag, FolderTree, Calendar, FileText, ArrowLeftRight, Plus, Trash2, AlertTriangle, Printer } from 'lucide-react';
 import { genericService } from '../../services/genericService';
+import { alternativeService } from '../../services/alternativeService';
 import Button from '../../components/common/Button';
 import Loading from '../../components/common/Loading';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../components/ui/dialog';
+import { useToast } from '../../components/ui/use-toast';
 import { TRANSLATIONS } from '../../utils/constants';
 import { formatDate } from '../../utils/formatters';
 import type { GenericDrugWithDetails } from '../../types/generic';
@@ -17,6 +20,14 @@ export default function GenericDetail() {
   const [alternatives, setAlternatives] = useState<GenericAlternativeWithNames[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [alternativeModalOpen, setAlternativeModalOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [alternativeToDelete, setAlternativeToDelete] = useState<number | null>(null);
+  const { toast } = useToast();
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   useEffect(() => {
     if (!numericId) return;
@@ -99,6 +110,10 @@ export default function GenericDetail() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handlePrint} className="gap-2">
+            <Printer className="h-4 w-4" />
+            طباعة
+          </Button>
           <Link to={`/generics/${numericId}/edit`}>
             <Button variant="outline" className="gap-2">تعديل</Button>
           </Link>
@@ -222,45 +237,127 @@ export default function GenericDetail() {
       )}
 
       {/* Alternatives — uses GET /generics/{id}/alternatives */}
-      {alternatives.length > 0 && (
-        <div className="bg-[hsl(var(--card))] rounded-xl border border-[hsl(var(--border))] shadow-[var(--shadow-sm)] p-6">
-          <h2 className="font-semibold text-[hsl(var(--foreground))] mb-4 pb-3 border-b border-[hsl(var(--border))] flex items-center gap-2">
+      <div className="bg-[hsl(var(--card))] rounded-xl border border-[hsl(var(--border))] shadow-[var(--shadow-sm)] p-6">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-[hsl(var(--border))]">
+          <h2 className="font-semibold text-[hsl(var(--foreground))] flex items-center gap-2">
             <div className="h-7 w-7 rounded-lg bg-[hsl(var(--primary)/0.1)] flex items-center justify-center">
               <ArrowLeftRight className="h-4 w-4 text-[hsl(var(--primary))]" />
             </div>
             البدائل العلاجية
-            <span className="mr-auto bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] text-xs font-bold px-2.5 py-0.5 rounded-full">{alternatives.length}</span>
+            <span className="bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] text-xs font-bold px-2.5 py-0.5 rounded-full">{alternatives.length}</span>
           </h2>
+          <Button variant="outline" size="sm" onClick={() => setAlternativeModalOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            إضافة بديل
+          </Button>
+        </div>
+        {alternatives.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <div className="h-12 w-12 rounded-full bg-[hsl(var(--muted))] flex items-center justify-center mb-3">
+              <ArrowLeftRight className="h-6 w-6 text-[hsl(var(--muted-foreground))]" />
+            </div>
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">لا توجد بدائل علاجية مسجلة</p>
+            <Button variant="outline" size="sm" onClick={() => setAlternativeModalOpen(true)} className="mt-3">
+              إضافة بديل
+            </Button>
+          </div>
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {alternatives.map((alt) => {
-              const altGeneric = alt.alternative_generic || { id: alt.alternative_generic_id, scientific_name: alt.alternative_generic_name || '' };
+              const altGeneric = alt.alternative_generic || { generic_id: alt.alternative_generic_id, generic_name: '' };
               return (
-                <Link
-                  key={alt.id}
-                  to={`/generics/${altGeneric.id}`}
+                <div
+                  key={alt.alternative_id}
                   className="flex items-start gap-3 p-3 rounded-lg hover:bg-[hsl(var(--accent))] border border-transparent hover:border-[hsl(var(--border))] transition-all group"
                 >
                   <div className="h-8 w-8 rounded-lg bg-[hsl(var(--primary)/0.1)] group-hover:bg-[hsl(var(--primary))] flex items-center justify-center flex-shrink-0 transition-colors">
                     <Pill className="h-4 w-4 text-[hsl(var(--primary))] group-hover:text-white transition-colors" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-[hsl(var(--foreground))] truncate">
-                      {alt.alternative_generic_name || altGeneric.scientific_name}
-                    </p>
-                    {alt.similarity_score && (
+                    <Link to={`/generics/${altGeneric.generic_id}`} className="text-sm font-medium text-[hsl(var(--foreground))] truncate hover:text-[hsl(var(--primary))]">
+                      {altGeneric.generic_name}
+                    </Link>
+                    {alt.bioequivalence_status && (
                       <p className="text-xs mt-0.5">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full font-medium ${alt.similarity_score >= 80 ? 'bg-emerald-100 text-emerald-700' : alt.similarity_score >= 50 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
-                          {alt.similarity_score}%
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full font-medium ${
+                          alt.bioequivalence_status === 'equivalent' ? 'bg-emerald-100 text-emerald-700' :
+                          alt.bioequivalence_status === 'similar' ? 'bg-amber-100 text-amber-700' :
+                          'bg-red-100 text-red-700'
+                        }`}>
+                          {alt.bioequivalence_status}
                         </span>
                       </p>
                     )}
                   </div>
-                </Link>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setAlternativeToDelete(alt.alternative_id)}
+                      className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-red-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors"
+                      title="حذف"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
               );
             })}
           </div>
-        </div>
-      )}
+        )}
+      </div>
+
+      {/* Delete Alternative Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-600" />
+              تأكيد الحذف
+            </DialogTitle>
+            <DialogDescription>
+              هل أنت متأكد من حذف هذا البديل؟ لا يمكن التراجع عن هذا الإجراء.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>إلغاء</Button>
+            <Button variant="danger" onClick={async () => {
+              if (!alternativeToDelete) return;
+              try {
+                await alternativeService.delete(alternativeToDelete);
+                setDeleteDialogOpen(false);
+                setAlternativeToDelete(null);
+                toast({ title: 'تم الحذف بنجاح', description: 'تم حذف البديل من النظام' });
+                const altsData = await genericService.getAlternatives(numericId!);
+                setAlternatives(altsData);
+              } catch (err: any) {
+                toast({ title: 'فشل الحذف', description: err.response?.data?.detail || 'فشل الحذف', variant: 'destructive' });
+              }
+            }}>حذف</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Alternative Modal */}
+      <Dialog open={alternativeModalOpen} onOpenChange={setAlternativeModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5 text-[hsl(var(--primary))]" />
+              إضافة بديل علاجي
+            </DialogTitle>
+            <DialogDescription>
+              اختر الدواء البديل لهذا الدواء الجنيس
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              سيتم إضافة ميزة اختيار الدواء البديل هنا. حالياً يمكنك إضافة البدائل من صفحة البدائل.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAlternativeModalOpen(false)}>إلغاء</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

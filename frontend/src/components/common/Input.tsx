@@ -5,31 +5,40 @@ import { forwardRef } from 'react';
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  icon?: React.ReactNode;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, ...props }, ref) => {
+  ({ className, label, error, icon, ...props }, ref) => {
     return (
-      <div className="w-full">
+      <div className="w-full space-y-2">
         {label && (
-          <label className="mb-1 block text-sm font-medium text-[hsl(var(--foreground))]">
+          <label className="flex items-center gap-2 text-xs font-semibold tracking-wide uppercase text-[hsl(var(--text-secondary))]">
+            {icon && <span className="text-[hsl(var(--primary))]">{icon}</span>}
             {label}
           </label>
         )}
-        <input
-          ref={ref}
-          className={cn(
-            'flex h-10 w-full rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))]',
-            'px-3.5 py-2 text-sm text-[hsl(var(--foreground))]',
-            'placeholder:text-[hsl(var(--muted-foreground))]',
-            'focus:outline-none focus:border-[hsl(var(--ring))] focus:shadow-[0_0_0_3px_hsl(var(--ring)/0.15)]',
-            'transition-[border-color,box-shadow] duration-150',
-            'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[hsl(var(--muted))]',
-            error && 'border-[hsl(var(--destructive))] focus:shadow-[0_0_0_3px_hsl(var(--destructive)/0.1)]',
-            className
+        <div className="relative group">
+          <input
+            ref={ref}
+            className={cn(
+              'w-full h-12 px-4 rounded-xl bg-[hsl(var(--bg-elevated))] border-2 border-[hsl(var(--border))] text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))]/40',
+              'focus:outline-none focus:border-[hsl(var(--primary))] focus:ring-4 focus:ring-[hsl(var(--primary)/0.1)]',
+              'transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-sm font-medium',
+              'group-hover:border-[hsl(var(--border-glow))] group-hover:shadow-lg',
+              'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[hsl(var(--muted))]',
+              error && 'border-[hsl(var(--destructive))] focus:ring-[hsl(var(--destructive)/0.1)]',
+              icon && 'pr-12',
+              className
+            )}
+            {...props}
+          />
+          {icon && (
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[hsl(var(--primary))]">
+              {icon}
+            </div>
           )}
-          {...props}
-        />
+        </div>
         {error && (
           <p className="mt-1.5 text-xs text-[hsl(var(--destructive))] flex items-center gap-1">
             {error}

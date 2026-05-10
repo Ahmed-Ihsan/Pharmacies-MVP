@@ -66,5 +66,19 @@ class AlternativeRepository(
             .first()
         )
 
+    def get_multi_with_details(
+        self, db: Session, skip: int = 0, limit: int = 100
+    ) -> List[GenericAlternative]:
+        return (
+            db.query(GenericAlternative)
+            .options(
+                joinedload(GenericAlternative.primary_generic),
+                joinedload(GenericAlternative.alternative_generic),
+            )
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
 
 alternative_repository = AlternativeRepository()

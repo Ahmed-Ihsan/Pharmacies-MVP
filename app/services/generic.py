@@ -9,6 +9,7 @@ from app.schemas.generic import (
     GenericDrugWithDetails,
 )
 from app.core.exceptions import DuplicateException, NotFoundException
+from app.utils.code_generator import code_generator
 
 
 class GenericService:
@@ -65,10 +66,16 @@ class GenericService:
         return self.repo.get_count_by_class(db, class_id=class_id)
 
     def create(self, db: Session, obj_in: GenericDrugCreate) -> GenericDrug:
+        # Auto-generate cas_number if not provided
+        if not obj_in.cas_number:
+            obj_in.cas_number = code_generator.generate_cas_number()
+        
+        # Check for duplicate cas_number
         if obj_in.cas_number:
             existing = self.repo.get_by_cas_number(db, obj_in.cas_number)
             if existing:
-                raise DuplicateException("GenericDrug", "cas_number", obj_in.cas_number)
+                # If duplicate, generate new code
+                obj_in.cas_number = code_generator.generate_cas_number()
 
         existing = self.repo.get_by_name(db, obj_in.generic_name)
         if existing:

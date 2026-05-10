@@ -1,0 +1,182 @@
+# =============================================================================
+# Pharmacy Management System — Windsurf AI Rules
+# =============================================================================
+# Project : Pharmacies-MVP
+# Stack   : FastAPI + React 19 + SQLite | Docker
+# Scale   : ~9,800 lines | 61 files
+# Repo    : https://github.com/Ahmed-Ihsan/Pharmacies-MVP
+# =============================================================================
+
+## 1. Project Identity
+
+| Attribute   | Value                                                              |
+|-------------|-------------------------------------------------------------------|
+| Name        | Pharmacy Management System (Pharmacies-MVP)                       |
+| Purpose     | Pharmaceutical inventory, pricing, alternatives, ATC classification|
+| UI Language | Arabic (RTL) primary — English for all code identifiers           |
+| Auth        | JWT via python-jose + bcrypt (passlib)                            |
+
+---
+
+## 2. Technology Stack
+
+### Backend
+- **Runtime:** Python 3.10
+- **Framework:** FastAPI (async-first)
+- **ORM:** SQLAlchemy 2.0 (async sessions) + Alembic migrations
+- **Validation:** Pydantic v2 (`model_validate`, not `parse_obj`)
+- **Database:** SQLite — `data/pharmacy.db`
+
+### Frontend
+- **Framework:** React 19 + TypeScript (strict mode)
+- **Build:** Vite
+- **Styling:** Tailwind CSS v3 (utility-only, no inline styles)
+- **Components:** shadcn/ui (`src/components/ui/`)
+- **HTTP:** axios via service layer (`src/services/`)
+
+### Infrastructure
+- **Deployment:** Docker + docker-compose (multi-stage builds)
+- **Testing:** pytest + httpx (backend) | ESLint (frontend)
+
+---
+
+## 3. Architecture
+
+**Pattern:** Repository → Service → API (strict layered separation)
+
+### Backend Directory Layout
+```
+app/
+  models/        # SQLAlchemy ORM models
+  schemas/       # Pydantic request/response schemas
+  repositories/  # Data access — one repository per model
+  services/      # All business logic lives here, never in endpoints
+  api/v1/endpoints/  # FastAPI route handlers (thin layer)
+  core/          # Config, constants, custom exceptions
+  db/            # Session factory and declarative base
+```
+
+### Frontend Directory Layout
+```
+src/
+  pages/         # Route-level page components
+  components/    # ui/ | common/ | forms/ | wizards/ | layout/
+  hooks/         # Custom React hooks
+  services/      # Axios API client modules
+  types/         # TypeScript type definitions
+  context/       # React context providers
+  utils/         # cn(), formatters, constants
+```
+
+---
+
+## 4. Code Style & Conventions
+
+### Python (Backend)
+- PEP 8 strict — type hints on **all** signatures and return values
+- `from __future__ import annotations` for forward references
+- Async database sessions with context managers
+- One repository class per ORM model
+- HTTP exceptions raised in **services**, propagated to FastAPI
+- No business logic in endpoint handlers
+
+### TypeScript / React (Frontend)
+- `strict: true` — no `any` unless absolutely unavoidable
+- Functional components + hooks only (no class components)
+- RTL-first layout (`dir="rtl"` on body)
+- Arabic labels with English code identifiers
+- `cn()` from `src/utils/cn.ts` for all class merging
+- Controlled form components; state managed locally or in context
+- All API calls through `src/services/` — never directly from components
+
+### Universal
+- No comments unless explaining non-obvious logic
+- No `console.log` in production code
+- No `TODO` without a linked GitHub issue
+- File naming: `snake_case.py` for Python, `PascalCase.tsx` for React components
+- Imports ordered: external libraries → internal modules
+
+---
+
+## 5. Domain Entities
+
+| Entity           | Description                                              |
+|------------------|----------------------------------------------------------|
+| `Generic`        | Drug active ingredient (`name`, `arabic_name`)           |
+| `Brand`          | Commercial product → linked to Generic, Manufacturer, DosageForm |
+| `Manufacturer`   | Pharmaceutical company (`country`, `website`)            |
+| `DosageForm`     | Drug form (tablet, syrup, injection, …)                  |
+| `TherapeuticClass` | ATC hierarchy (parent-child, `level`, `code`)          |
+| `Price`          | Drug pricing in IQD → linked to Brand                    |
+| `Alternative`    | Drug substitutes → linked to Generic                     |
+
+---
+
+## 6. Testing Guidelines
+
+- Backend tests: `tests/` (pytest)
+  - Unit: `tests/unit/` — services, repositories
+  - Integration: `tests/integration/` — API endpoints
+- Shared fixtures in `conftest.py`
+- Mock all external dependencies; test business logic in isolation
+- Run suite: `pytest` from project root
+
+---
+
+## 7. Docker Deployment
+
+| Command                  | Action               |
+|--------------------------|----------------------|
+| `docker-compose build`   | Build images         |
+| `docker-compose up -d`   | Start services       |
+| `docker-compose down`    | Stop services        |
+
+- Backend → port **8000** | Frontend → port **80**
+- Database volume persists under `data/`
+- Health checks configured for both services
+
+---
+
+## 8. Token Optimization
+
+- Read only the files required to complete the task
+- Prefer targeted `edit` calls over full-file rewrites
+- Use `@file.ts:10-20` line-range syntax for precise reads
+- Skip `venv/`, `node_modules/`, `__pycache__/`, `.git/`
+- Debug path: `models/ → repositories/ → services/ → endpoints/`
+- Frontend debug path: component → its types → its service module
+- Always run `grep`/`code_search` before opening files
+
+---
+
+## 9. Skill Activation Map
+
+Activate the matching skill **automatically** for each prompt category:
+
+| Prompt Category                          | Activate Skill(s)                                   |
+|------------------------------------------|-----------------------------------------------------|
+| FastAPI endpoints, routing, middleware   | `.skills/fastapi-pro`                               |
+| Python logic, async patterns, typing    | `.skills/python-pro`                                |
+| SQLAlchemy models, queries, migrations  | `.skills/database-design`                           |
+| React components, hooks, state          | `.skills/react-best-practices`                      |
+| TypeScript types, strict mode           | `.skills/typescript-pro`                            |
+| shadcn/ui, Tailwind, RTL design         | `.skills/shadcn` + `.skills/tailwind-design-system` |
+| Docker, docker-compose, multi-stage     | `.skills/docker-expert`                             |
+| Unit / integration tests (pytest)       | `.skills/python-testing-patterns`                   |
+| Security, JWT, auth flows               | `.skills/auth-implementation-patterns`              |
+| API schema / OpenAPI documentation      | `.skills/api-design-principles`                     |
+| Bug investigation & root-cause analysis | `.skills/systematic-debugging`                      |
+| Code review & refactor requests         | `.skills/code-review-excellence`                    |
+| Performance bottlenecks                 | `.skills/performance-optimizer`                     |
+| Database query optimization             | `.skills/database-optimizer`                        |
+
+> **Rule:** Before writing any code, identify the prompt category and load the relevant skill(s) from `.skills/`. Apply that skill's behavioral traits, patterns, and checklists throughout the response.
+
+---
+
+## 10. Communication Style
+
+- Respond in **Arabic** when the user writes in Arabic; **English** otherwise
+- Be concise and direct — no preamble, no filler phrases
+- Deliver code changes via edit tools, never as markdown blocks
+- Confirm completion with a one-line status summary

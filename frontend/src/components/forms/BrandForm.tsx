@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Package, Save, X, Pill, Building2, Beaker, Barcode, Hash, Box, Scale, FileText, AlertCircle } from 'lucide-react';
+import { Package, Save, X, Pill, Building2, Beaker, Barcode, Hash, Box, Scale, FileText, AlertCircle, RefreshCw, Info } from 'lucide-react';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import { TRANSLATIONS } from '../../utils/constants';
 import { genericService } from '../../services/genericService';
 import { manufacturerService } from '../../services/manufacturerService';
+import { CodeGenerator } from '../../utils/codeGenerator';
 
 interface BrandFormProps {
   initialData?: {
@@ -98,6 +99,17 @@ export default function BrandForm({
     
     loadDropdownData();
   }, []);
+
+  // Auto-generate codes on mount for new records
+  useEffect(() => {
+    if (!isEdit) {
+      if (!ndcNumber) setNdcNumber(CodeGenerator.generateNdcNumber());
+      if (!barcode) setBarcode(CodeGenerator.generateBarcode());
+    }
+  }, [isEdit]);
+
+  const handleRegenerateNdc = () => setNdcNumber(CodeGenerator.generateNdcNumber());
+  const handleRegenerateBarcode = () => setBarcode(CodeGenerator.generateBarcode());
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -318,16 +330,34 @@ export default function BrandForm({
               <label className="block text-sm font-medium text-[hsl(var(--foreground))] mb-2">
                 رقم NDC
               </label>
-              <div className="relative">
-                <Hash className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--muted-foreground))]" />
-                <Input
-                  type="text"
-                  value={ndcNumber}
-                  onChange={(e) => setNdcNumber(e.target.value)}
-                  placeholder="11 رقم"
-                  disabled={isLoading}
-                  className="pr-10"
-                />
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Hash className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--muted-foreground))]" />
+                  <Input
+                    type="text"
+                    value={ndcNumber}
+                    onChange={(e) => setNdcNumber(e.target.value)}
+                    placeholder="XXXXX-XXXX-XX"
+                    disabled={isLoading}
+                    className="pr-10"
+                  />
+                </div>
+                {!isEdit && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleRegenerateNdc}
+                    disabled={isLoading}
+                    className="px-3"
+                    title="توليد رقم جديد"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              <div className="flex items-center gap-2 mt-1.5 text-xs text-[hsl(var(--muted-foreground))]">
+                <Info className="h-3.5 w-3.5" />
+                <span>النمط: {CodeGenerator.getPatternDescription('ndc_number')}</span>
               </div>
             </div>
 
@@ -335,16 +365,34 @@ export default function BrandForm({
               <label className="block text-sm font-medium text-[hsl(var(--foreground))] mb-2">
                 الباركود
               </label>
-              <div className="relative">
-                <Barcode className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--muted-foreground))]" />
-                <Input
-                  type="text"
-                  value={barcode}
-                  onChange={(e) => setBarcode(e.target.value)}
-                  placeholder="UPC/EAN"
-                  disabled={isLoading}
-                  className="pr-10"
-                />
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Barcode className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--muted-foreground))]" />
+                  <Input
+                    type="text"
+                    value={barcode}
+                    onChange={(e) => setBarcode(e.target.value)}
+                    placeholder="13 رقم"
+                    disabled={isLoading}
+                    className="pr-10"
+                  />
+                </div>
+                {!isEdit && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleRegenerateBarcode}
+                    disabled={isLoading}
+                    className="px-3"
+                    title="توليد رقم جديد"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              <div className="flex items-center gap-2 mt-1.5 text-xs text-[hsl(var(--muted-foreground))]">
+                <Info className="h-3.5 w-3.5" />
+                <span>النمط: {CodeGenerator.getPatternDescription('barcode')}</span>
               </div>
             </div>
 
@@ -362,6 +410,10 @@ export default function BrandForm({
                   disabled={isLoading}
                   className="pr-10"
                 />
+              </div>
+              <div className="flex items-center gap-2 mt-1.5 text-xs text-[hsl(var(--muted-foreground))]">
+                <Info className="h-3.5 w-3.5" />
+                <span>النمط: {CodeGenerator.getPatternDescription('atc_code')}</span>
               </div>
             </div>
           </div>

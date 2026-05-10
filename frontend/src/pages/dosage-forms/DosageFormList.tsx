@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Eye, Edit2, Trash2, Container, AlertTriangle, Search } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Plus, Edit2, Trash2, Container, AlertTriangle, Search } from 'lucide-react';
 import { dosageFormService } from '../../services/dosageFormService';
 import SearchBar from '../../components/common/SearchBar';
 import Button from '../../components/common/Button';
@@ -9,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from '../../components/ui/use-toast';
 import { TRANSLATIONS, DEFAULT_PAGE_SIZE } from '../../utils/constants';
 import type { PaginatedResponse } from '../../types/common';
-import type { DosageForm } from '../../types/dosageForm';
+import type { DosageForm, DosageFormCreate, DosageFormUpdate } from '../../types/dosageForm';
 
 export default function DosageFormList() {
   const [search, setSearch] = useState('');
@@ -19,6 +18,15 @@ export default function DosageFormList() {
   const [error, setError] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+  const [formModalOpen, setFormModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<DosageForm | null>(null);
+  const [formLoading, setFormLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    form_code: '',
+    form_name: '',
+    form_category: '',
+    description: '',
+  });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -66,7 +74,62 @@ export default function DosageFormList() {
     }
   };
 
-  const getItemId = (item: DosageForm) => (item as any).form_id ?? item.id ?? 0;
+  const getItemId = (item: DosageForm) => item.dosage_form_id ?? 0;
+
+  const openFormModal = (item: DosageForm | null = null) => {
+    setEditingItem(item);
+    if (item) {
+      setFormData({
+        form_code: item.form_code,
+        form_name: item.form_name,
+        form_category: item.form_category || '',
+        description: item.description || '',
+      });
+    } else {
+      setFormData({ form_code: '', form_name: '', form_category: '', description: '' });
+    }
+    setFormModalOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.form_code || !formData.form_name) {
+      toast({ title: 'خطأ', description: 'الرمز والاسم مطلوبان', variant: 'destructive' });
+      return;
+    }
+
+    setFormLoading(true);
+    try {
+      if (editingItem) {
+        const updateData: DosageFormUpdate = {
+          form_code: formData.form_code,
+          form_name: formData.form_name,
+          form_category: formData.form_category || undefined,
+          description: formData.description || undefined,
+        };
+        await dosageFormService.update(getItemId(editingItem), updateData);
+        toast({ title: 'تم التعديل بنجاح', description: 'تم تحديث شكل الجرعة' });
+      } else {
+        const createData: DosageFormCreate = {
+          form_code: formData.form_code,
+          form_name: formData.form_name,
+          form_category: formData.form_category || undefined,
+          description: formData.description || undefined,
+        };
+        await dosageFormService.create(createData);
+        toast({ title: 'تم الإضافة بنجاح', description: 'تم إضافة شكل الجرعة الجديد' });
+      }
+      setFormModalOpen(false);
+      setEditingItem(null);
+      setFormData({ form_code: '', form_name: '', form_category: '', description: '' });
+      const response = await dosageFormService.list({ skip, limit: DEFAULT_PAGE_SIZE, search: search || undefined });
+      setData(response);
+    } catch (err: any) {
+      toast({ title: 'فشلت العملية', description: err.response?.data?.detail || 'حدث خطأ', variant: 'destructive' });
+    } finally {
+      setFormLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -104,12 +167,10 @@ export default function DosageFormList() {
             </p>
           </div>
         </div>
-        <Link to="/dosage-forms/new">
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            {TRANSLATIONS.add}
-          </Button>
-        </Link>
+        <Button className="gap-2" onClick={() => openFormModal(null)}>
+          <Plus className="h-4 w-4" />
+          {TRANSLATIONS.add}
+        </Button>
       </div>
 
       {/* Stats Card */}
@@ -177,7 +238,7 @@ export default function DosageFormList() {
                     </td>
                   </tr>
                 ) : (
-                  data.items.map((item, index) => (
+                  data.items.map((item) => (
                     <tr key={getItemId(item)}>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-3">
@@ -186,8 +247,8 @@ export default function DosageFormList() {
                           </div>
                           <div>
                             <p className="font-semibold text-[hsl(var(--foreground))]">{item.form_name}</p>
-                            {item.arabic_name && (
-                              <p className="text-xs text-[hsl(var(--muted-foreground))] mt-0.5">{item.arabic_name}</p>
+                            {item.description && (
+                              <p className="text-xs text-[hsl(var(--muted-foreground))] mt-0.5">{item.description}</p>
                             )}
                           </div>
                         </div>
@@ -212,16 +273,13 @@ export default function DosageFormList() {
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center justify-center gap-1.5">
-                          <Link to={`/dosage-forms/${getItemId(item)}`}>
-                            <button className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-[hsl(var(--primary))] text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors" title="عرض">
-                              <Eye className="h-3.5 w-3.5" />
-                            </button>
-                          </Link>
-                          <Link to={`/dosage-forms/${getItemId(item)}/edit`}>
-                            <button className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-amber-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors" title="تعديل">
-                              <Edit2 className="h-3.5 w-3.5" />
-                            </button>
-                          </Link>
+                          <button
+                            onClick={() => openFormModal(item)}
+                            className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-amber-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors"
+                            title="تعديل"
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                          </button>
                           <button
                             onClick={() => handleDeleteClick(getItemId(item))}
                             className="w-8 h-8 rounded-lg bg-[hsl(var(--muted))] hover:bg-red-500 text-[hsl(var(--muted-foreground))] hover:text-white flex items-center justify-center transition-colors"
@@ -266,6 +324,71 @@ export default function DosageFormList() {
           )}
         </div>
       )}
+
+      {/* Form Modal */}
+      <Dialog open={formModalOpen} onOpenChange={setFormModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Container className="h-5 w-5 text-[hsl(var(--primary))]" />
+              {editingItem ? 'تعديل شكل الجرعة' : 'إضافة شكل جرعة جديد'}
+            </DialogTitle>
+            <DialogDescription>
+              {editingItem ? 'تعديل بيانات شكل الجرعة' : 'أدخل بيانات شكل الجرعة الجديد'}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[hsl(var(--foreground))]">الرمز *</label>
+              <input
+                type="text"
+                value={formData.form_code}
+                onChange={(e) => setFormData({ ...formData, form_code: e.target.value })}
+                placeholder="مثال: TAB"
+                required
+                className="w-full px-3 py-2 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]/30 focus:border-[hsl(var(--primary))]"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[hsl(var(--foreground))]">الاسم *</label>
+              <input
+                type="text"
+                value={formData.form_name}
+                onChange={(e) => setFormData({ ...formData, form_name: e.target.value })}
+                placeholder="مثال: Tablet"
+                required
+                className="w-full px-3 py-2 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]/30 focus:border-[hsl(var(--primary))]"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[hsl(var(--foreground))]">التصنيف</label>
+              <input
+                type="text"
+                value={formData.form_category}
+                onChange={(e) => setFormData({ ...formData, form_category: e.target.value })}
+                placeholder="مثال: Oral"
+                className="w-full px-3 py-2 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]/30 focus:border-[hsl(var(--primary))]"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[hsl(var(--foreground))]">الوصف</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="وصف شكل الجرعة..."
+                rows={3}
+                className="w-full px-3 py-2 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]/30 focus:border-[hsl(var(--primary))] resize-none"
+              />
+            </div>
+          </form>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setFormModalOpen(false)}>إلغاء</Button>
+            <Button onClick={handleSubmit} loading={formLoading}>
+              {editingItem ? 'حفظ التعديلات' : 'إضافة'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

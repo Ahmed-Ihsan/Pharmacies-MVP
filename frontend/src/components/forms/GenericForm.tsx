@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Pill, Save, X } from 'lucide-react';
+import { Pill, Save, X, RefreshCw, Info } from 'lucide-react';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import { TRANSLATIONS } from '../../utils/constants';
 import { therapeuticClassService } from '../../services/therapeuticClassService';
+import { CodeGenerator } from '../../utils/codeGenerator';
 
 interface GenericFormProps {
   initialData?: {
@@ -45,6 +46,17 @@ export default function GenericForm({
   const [interactions, setInteractions] = useState(initialData?.interactions || '');
   const [therapeuticClasses, setTherapeuticClasses] = useState<Array<{ id: number; name: string }>>([]);
   const [therapeuticClassesLoading, setTherapeuticClassesLoading] = useState(true);
+
+  // Auto-generate CAS number on mount for new records
+  useEffect(() => {
+    if (!isEdit && !casNumber) {
+      setCasNumber(CodeGenerator.generateCasNumber());
+    }
+  }, [isEdit, casNumber]);
+
+  const handleRegenerateCasNumber = () => {
+    setCasNumber(CodeGenerator.generateCasNumber());
+  };
 
   useEffect(() => {
     const loadTherapeuticClasses = async () => {
@@ -141,13 +153,32 @@ export default function GenericForm({
           <label className="block text-sm font-medium text-[hsl(var(--foreground))] mb-2">
             رقم CAS
           </label>
-          <Input
-            type="text"
-            value={casNumber}
-            onChange={(e) => setCasNumber(e.target.value)}
-            placeholder="أدخل رقم CAS"
-            disabled={isLoading}
-          />
+          <div className="flex gap-2">
+            <Input
+              type="text"
+              value={casNumber}
+              onChange={(e) => setCasNumber(e.target.value)}
+              placeholder="أدخل رقم CAS"
+              disabled={isLoading}
+              className="flex-1"
+            />
+            {!isEdit && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleRegenerateCasNumber}
+                disabled={isLoading}
+                className="px-3"
+                title="توليد رقم جديد"
+              >
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          <div className="flex items-center gap-2 mt-1.5 text-xs text-[hsl(var(--muted-foreground))]">
+            <Info className="h-3.5 w-3.5" />
+            <span>النمط: {CodeGenerator.getPatternDescription('cas_number')}</span>
+          </div>
         </div>
 
         <div>

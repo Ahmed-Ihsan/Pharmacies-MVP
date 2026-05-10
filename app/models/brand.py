@@ -46,6 +46,7 @@ class BrandName(Base):
     manufacturer = relationship("Manufacturer", back_populates="brand_names")
     dosage_form = relationship("DosageForm", back_populates="brand_names")
     prices = relationship("DrugPrice", back_populates="brand_name")
+    inventory = relationship("Inventory", back_populates="brand", uselist=False)
 
     def __repr__(self):
         return f"<BrandName(brand_name='{self.brand_name}', ndc='{self.ndc_number}')>"

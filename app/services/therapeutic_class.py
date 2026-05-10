@@ -4,6 +4,7 @@ from app.models.therapeutic_class import TherapeuticClass
 from app.repositories.therapeutic_class import therapeutic_class_repository
 from app.schemas.therapeutic_class import TherapeuticClassCreate, TherapeuticClassUpdate
 from app.core.exceptions import DuplicateException, NotFoundException
+from app.utils.code_generator import code_generator
 
 
 class TherapeuticClassService:
@@ -39,12 +40,23 @@ class TherapeuticClassService:
         return self.repo.get_children(db, parent_id)
 
     def create(self, db: Session, obj_in: TherapeuticClassCreate) -> TherapeuticClass:
+        # Auto-generate class_code if not provided
+        if not obj_in.class_code:
+            parent_code = None
+            if obj_in.parent_class_id:
+                parent = self.repo.get(db, obj_in.parent_class_id)
+                parent_code = parent.class_code if parent else None
+            obj_in.class_code = code_generator.generate_class_code(parent_code)
+        
         # Check for duplicate code
         existing = self.repo.get_by_code(db, obj_in.class_code)
         if existing:
-            raise DuplicateException(
-                "TherapeuticClass", "class_code", obj_in.class_code
-            )
+            # If duplicate, generate new code
+            parent_code = None
+            if obj_in.parent_class_id:
+                parent = self.repo.get(db, obj_in.parent_class_id)
+                parent_code = parent.class_code if parent else None
+            obj_in.class_code = code_generator.generate_class_code(parent_code)
 
         # Check for duplicate name
         existing = self.repo.get_by_name(db, obj_in.class_name)

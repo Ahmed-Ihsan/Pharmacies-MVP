@@ -4,6 +4,7 @@ from app.models.brand import BrandName
 from app.repositories.brand import brand_repository
 from app.schemas.brand import BrandNameCreate, BrandNameUpdate, BrandNameWithDetails
 from app.core.exceptions import DuplicateException, NotFoundException
+from app.utils.code_generator import code_generator
 
 
 class BrandService:
@@ -62,15 +63,33 @@ class BrandService:
         return self.repo.get_count_by_manufacturer(db, manufacturer_id=manufacturer_id)
 
     def create(self, db: Session, obj_in: BrandNameCreate) -> BrandName:
+        # Auto-generate ndc_number if not provided
+        if not obj_in.ndc_number:
+            obj_in.ndc_number = code_generator.generate_ndc_number()
+        
+        # Auto-generate barcode if not provided
+        if not obj_in.barcode:
+            obj_in.barcode = code_generator.generate_barcode()
+        
+        # Auto-generate atc_code if not provided and therapeutic class exists
+        if not obj_in.atc_code:
+            # Could be generated based on therapeutic class in future
+            # For now, leave it optional
+            pass
+        
+        # Check for duplicate ndc_number
         if obj_in.ndc_number:
             existing = self.repo.get_by_ndc(db, obj_in.ndc_number)
             if existing:
-                raise DuplicateException("BrandName", "ndc_number", obj_in.ndc_number)
+                # If duplicate, generate new code
+                obj_in.ndc_number = code_generator.generate_ndc_number()
 
+        # Check for duplicate barcode
         if obj_in.barcode:
             existing = self.repo.get_by_barcode(db, obj_in.barcode)
             if existing:
-                raise DuplicateException("BrandName", "barcode", obj_in.barcode)
+                # If duplicate, generate new code
+                obj_in.barcode = code_generator.generate_barcode()
 
         return self.repo.create(db, obj_in=obj_in)
 

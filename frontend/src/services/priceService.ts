@@ -10,6 +10,15 @@ import type {
 const BASE_URL = '/prices';
 
 export const priceService = {
+  // List all prices
+  list: async (params?: {
+    skip?: number;
+    limit?: number;
+  }): Promise<PaginatedResponse<DrugPriceWithBrand>> => {
+    const response = await api.get(BASE_URL + '/', { params });
+    return response.data;
+  },
+
   // List all prices for a specific brand
   listByBrand: async (brandId: number, params?: {
     skip?: number;

@@ -1,9 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');
 
 /* Modern Design System - Tailwind Patterns v4 Principles */
 @layer base {
@@ -946,4 +946,370 @@
   background: linear-gradient(180deg,
     hsl(var(--primary-accent)),
     hsl(var(--primary)));
+}
+
+/* ─── Professional Print Styles (A4) ───────────────────────────────────────────── */
+@media print {
+  /* Hide non-print elements */
+  aside,
+  nav,
+  button,
+  .no-print,
+  [role="dialog"],
+  .table-actions,
+  .pagination,
+  .search-bar,
+  .filter-section,
+  .flex.items-center.gap-2 button,
+  .flex.items-center.gap-2 a,
+  .back-button,
+  .edit-button,
+  .delete-button,
+  .add-button,
+  .action-buttons,
+  .modal-overlay,
+  .toast,
+  .loading-spinner,
+  .search-input,
+  .filter-input,
+  .dropdown-menu,
+  .select-input,
+  .checkbox-input,
+  .radio-input,
+  .toggle-switch,
+  .scrollbar,
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* Hide specific interactive elements */
+  [onclick],
+  [data-print="false"],
+  .print-hide {
+    display: none !important;
+  }
+
+  /* Hide icons */
+  svg,
+  .icon,
+  .lucide {
+    display: none !important;
+  }
+
+  /* Hide links that are buttons */
+  a[href*="/edit"],
+  a[href*="/new"],
+  a[href*="/delete"] {
+    display: none !important;
+  }
+
+  /* Hide stats cards if not needed */
+  .stats-card,
+  .bg-gradient-to-br,
+  .stat-card {
+    display: none !important;
+  }
+
+  /* Hide empty states */
+  .empty-state,
+  .no-results,
+  .loading-state {
+    display: none !important;
+  }
+
+  /* Hide navigation breadcrumbs */
+  .breadcrumb,
+  .nav-breadcrumb {
+    display: none !important;
+  }
+
+  /* Hide tabs navigation */
+  .tabs-nav,
+  .tab-buttons {
+    display: none !important;
+  }
+
+  /* Hide form inputs */
+  input,
+  select,
+  textarea,
+  .form-input,
+  .form-select,
+  .form-textarea {
+    display: none !important;
+  }
+
+  /* Reset body for print */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+
+  /* Container adjustments */
+  .space-y-8 > * + * {
+    margin-top: 1rem !important;
+  }
+
+  /* Card styling for print */
+  .bg-\[hsl\(var\(--card\)\)\],
+  .glass-panel,
+  .card-luxury {
+    background: white !important;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-radius: 0 !important;
+    margin-bottom: 1rem;
+    padding: 0.5rem !important;
+  }
+
+  /* Table styling for print */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    page-break-inside: auto;
+  }
+
+  .data-table thead {
+    position: static !important;
+    background: #f5f5f5 !important;
+  }
+
+  .data-table thead th {
+    background: #f5f5f5 !important;
+    color: black !important;
+    font-size: 10pt;
+    font-weight: bold;
+    border: 1px solid #ddd !important;
+    padding: 8px !important;
+  }
+
+  .data-table tbody tr {
+    border-bottom: 1px solid #ddd !important;
+    page-break-inside: avoid;
+  }
+
+  .data-table tbody tr:nth-child(even) {
+    background: #f9f9f9 !important;
+  }
+
+  .data-table tbody tr:hover {
+    background: #f9f9f9 !important;
+  }
+
+  .data-table tbody td {
+    color: black !important;
+    border: 1px solid #ddd !important;
+    padding: 8px !important;
+    font-size: 10pt;
+  }
+
+  /* Table container */
+  .table-container,
+  .table-luxury-container {
+    background: white !important;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin-bottom: 1rem;
+    page-break-inside: avoid;
+  }
+
+  /* Typography for print */
+  h1, h2, h3, h4, h5, h6 {
+    color: black !important;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+
+  h1 {
+    font-size: 18pt !important;
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    font-size: 14pt !important;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid #333 !important;
+    padding-bottom: 0.25rem;
+  }
+
+  h3 {
+    font-size: 12pt !important;
+  }
+
+  p {
+    color: black !important;
+    font-size: 11pt;
+  }
+
+  /* Links - only print text, not href */
+  a {
+    color: black !important;
+    text-decoration: none !important;
+  }
+
+  /* Don't show URL for links */
+  a[href]:after {
+    content: none !important;
+  }
+
+  /* Badges for print */
+  .badge,
+  .badge-luxury,
+  .badge-active,
+  .badge-inactive,
+  .badge-warning,
+  .badge-danger,
+  .badge-primary,
+  .badge-luxury-active,
+  .badge-luxury-inactive,
+  .badge-luxury-warning,
+  .badge-luxury-danger,
+  .badge-luxury-primary,
+  .inline-flex.items-center.gap-1.px-2,
+  .inline-flex.items-center.gap-1.px-2\.5 {
+    background: white !important;
+    color: black !important;
+    border: 1px solid #333 !important;
+    padding: 2px 6px !important;
+    font-size: 9pt;
+    display: inline !important;
+  }
+
+  /* Grid layouts for print */
+  .grid,
+  .bento-grid,
+  .auto-fit-grid,
+  .auto-fill-grid {
+    display: block !important;
+  }
+
+  .grid > *,
+  .bento-grid > *,
+  .auto-fit-grid > *,
+  .auto-fill-grid > * {
+    display: block !important;
+    margin-bottom: 1rem;
+    page-break-inside: avoid;
+  }
+
+  /* Stats card for print */
+  .bg-gradient-to-br {
+    background: white !important;
+    color: black !important;
+    border: 1px solid #ddd !important;
+  }
+
+  /* Page breaks */
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+  }
+
+  .page-break-inside-avoid {
+    page-break-inside: avoid;
+  }
+
+  /* Print header/footer */
+  @page {
+    margin: 1cm;
+    size: A4;
+  }
+
+  @page :first {
+    margin-top: 1cm;
+  }
+
+  /* Hide empty states in print */
+  .table-empty {
+    display: none;
+  }
+
+  /* Ensure table rows don't break */
+  tr {
+    page-break-inside: avoid;
+  }
+
+  td, th {
+    page-break-inside: avoid;
+  }
+
+  /* Flex layouts for print */
+  .flex-col,
+  .flex-row {
+    display: block !important;
+  }
+
+  .flex-col > *,
+  .flex-row > * {
+    display: block !important;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Print-specific utilities */
+  .print-only {
+    display: block !important;
+  }
+
+  .screen-only {
+    display: none !important;
+  }
+
+  /* Show only important content */
+  .print-content {
+    display: block !important;
+  }
+
+  /* Hide decorative elements */
+  .decoration,
+  .bg-gradient,
+  .shadow,
+  .backdrop-blur {
+    background: white !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Ensure text is readable */
+  * {
+    color: black !important;
+    background: transparent !important;
+  }
+
+  /* Remove hover effects */
+  *:hover {
+    background: transparent !important;
+    color: black !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Screen-only class (hidden in print) */
+.screen-only {
+  display: block;
+}
+
+@media print {
+  .screen-only {
+    display: none !important;
+  }
+}
+
+/* Print-only class (only visible in print) */
+.print-only {
+  display: none;
+}
+
+@media print {
+  .print-only {
+    display: block !important;
+  }
 }

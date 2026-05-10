@@ -5,6 +5,8 @@ from app.models.generic import GenericDrug
 from app.models.brand import BrandName
 from app.models.alternative import GenericAlternative
 from app.models.price import DrugPrice
+from app.models.inventory import Inventory, InventoryMovement, InventoryAlert
+from app.models.sale import Sale, SaleItem, Payment, SaleReturn, ReturnItem
 
 __all__ = [
     "TherapeuticClass",
@@ -14,4 +16,12 @@ __all__ = [
     "BrandName",
     "GenericAlternative",
     "DrugPrice",
+    "Inventory",
+    "InventoryMovement",
+    "InventoryAlert",
+    "Sale",
+    "SaleItem",
+    "Payment",
+    "SaleReturn",
+    "ReturnItem",
 ]

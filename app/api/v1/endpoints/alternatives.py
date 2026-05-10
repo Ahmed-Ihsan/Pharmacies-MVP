@@ -16,7 +16,7 @@ from app.core.exceptions import NotFoundException, DuplicateException
 router = APIRouter()
 
 
-@router.get("/", response_model=PaginatedResponse[GenericAlternativeResponse])
+@router.get("/", response_model=PaginatedResponse[GenericAlternativeWithNames])
 def list_alternatives(
     skip: int = 0,
     limit: int = 100,
@@ -25,19 +25,15 @@ def list_alternatives(
 ):
     """List all generic alternatives with optional filtering."""
     if primary_generic_id:
-        items = alternative_service.get_by_primary_generic(
-            db, primary_generic_id=primary_generic_id
-        )
-        total = alternative_service.get_count_by_primary_generic(
-            db, primary_generic_id=primary_generic_id
-        )
+        items = alternative_service.get_alternatives_for_generic(db, primary_generic_id)
+        total = alternative_service.get_count_by_primary_generic(db, primary_generic_id)
     else:
-        items = alternative_service.get_multi(db, skip=skip, limit=limit)
+        items = alternative_service.repo.get_multi_with_details(db, skip=skip, limit=limit)
         total = alternative_service.repo.get_count(db)
 
     return PaginatedResponse(
         total=total,
-        items=[GenericAlternativeResponse.model_validate(item) for item in items],
+        items=[GenericAlternativeWithNames.model_validate(item) for item in items],
         skip=skip,
         limit=limit,
     )

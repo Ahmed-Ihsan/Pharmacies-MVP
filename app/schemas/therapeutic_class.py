@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 class TherapeuticClassBase(BaseModel):
-    class_code: str
+    class_code: Optional[str] = None  # Auto-generated if not provided
     class_name: str
     parent_class_id: Optional[int] = None
     description: Optional[str] = None

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Eye, Edit2, Trash2, ScanBarcode, Package, Filter, Search as SearchIcon, Tag, Building2, Barcode, Scale, Beaker, AlertTriangle } from 'lucide-react';
+import { Plus, Eye, Edit2, Trash2, ScanBarcode, Package, Filter, Search as SearchIcon, Tag, Building2, Barcode, Scale, Beaker, AlertTriangle, Printer } from 'lucide-react';
 import { useBrands } from '../../hooks/useBrands';
 import SearchBar from '../../components/common/SearchBar';
 import Button from '../../components/common/Button';
@@ -19,6 +19,10 @@ export default function BrandList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [brandToDelete, setBrandToDelete] = useState<number | null>(null);
   const { toast } = useToast();
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   const { data, loading, error, refetch } = useBrands({
     skip,
@@ -109,6 +113,10 @@ export default function BrandList() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handlePrint} className="gap-2">
+            <Printer className="h-4 w-4" />
+            طباعة
+          </Button>
           <Button variant="outline" className="gap-2">
             <ScanBarcode className="h-4 w-4" />
             بحث بالباركود

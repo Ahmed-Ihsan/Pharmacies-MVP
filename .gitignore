@@ -179,9 +179,7 @@ frontend/tsconfig.tsbuildinfo
 .DS_Store
 
 # IDE-specific configs
-.skills/
-.agents/
-.windsurfrules
+
 
 # Database
 *.db
@@ -204,3 +202,6 @@ logs/
 tmp/
 temp/
 *.tmp
+
+# Skills folder
+.skills/

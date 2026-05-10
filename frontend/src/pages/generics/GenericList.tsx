@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Eye, Edit2, Trash2, FileText, AlertTriangle, Search, Filter, Pill, Heart, AlertCircle } from 'lucide-react';
+import { Plus, Eye, Edit2, Trash2, FileText, AlertTriangle, Search, Filter, Pill, Heart, AlertCircle, Printer } from 'lucide-react';
 import { useGenerics } from '../../hooks/useGenerics';
 import Button from '../../components/common/Button';
 import Loading from '../../components/common/Loading';
@@ -21,6 +21,10 @@ export default function GenericList() {
   const [therapeuticClasses, setTherapeuticClasses] = useState<Array<{ id: number; name: string }>>([]);
   const [therapeuticClassesLoading, setTherapeuticClassesLoading] = useState(true);
   const { toast } = useToast();
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   const therapeuticClassIdNumber = useMemo(() => {
     const parsed = parseInt(therapeuticClassId, 10);
@@ -160,12 +164,18 @@ export default function GenericList() {
             </p>
           </div>
         </div>
-        <Link to="/generics/new">
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            إضافة دواء جنيس
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handlePrint} className="gap-2">
+            <Printer className="h-4 w-4" />
+            طباعة
           </Button>
-        </Link>
+          <Link to="/generics/new">
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              إضافة دواء جنيس
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Card */}

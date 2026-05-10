@@ -6,9 +6,11 @@ import {
   Building2,
   FolderTree,
   Container,
-  ArrowLeftRight,
-  DollarSign,
+  Package,
+  ShoppingCart,
   Search,
+  Receipt,
+  RotateCcw,
   Activity,
 } from 'lucide-react';
 import { TRANSLATIONS } from '../../utils/constants';
@@ -21,8 +23,10 @@ const navigation = [
   { name: TRANSLATIONS.manufacturers, href: '/manufacturers', icon: Building2 },
   { name: TRANSLATIONS.therapeuticClasses, href: '/therapeutic-classes', icon: FolderTree },
   { name: TRANSLATIONS.dosageForms, href: '/dosage-forms', icon: Container },
-  { name: TRANSLATIONS.alternatives, href: '/alternatives', icon: ArrowLeftRight },
-  { name: TRANSLATIONS.prices, href: '/prices', icon: DollarSign },
+  { name: 'المخزون', href: '/inventory', icon: Package },
+  { name: 'نقطة البيع', href: '/pos', icon: ShoppingCart },
+  { name: 'سجل المبيعات', href: '/sales/history', icon: Receipt },
+  { name: 'الإرجاعات', href: '/sales/returns', icon: RotateCcw },
   { name: TRANSLATIONS.search, href: '/search', icon: Search },
 ];
 

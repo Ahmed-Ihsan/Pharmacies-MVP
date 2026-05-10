@@ -23,6 +23,9 @@ class PriceService:
             raise NotFoundException("DrugPrice", str(price_id))
         return DrugPriceWithBrand.model_validate(obj)
 
+    def get_multi(self, db: Session, skip: int = 0, limit: int = 100) -> List[DrugPrice]:
+        return self.repo.get_multi(db, skip=skip, limit=limit)
+
     def get_by_brand(
         self, db: Session, brand_id: int, skip: int = 0, limit: int = 100
     ) -> List[DrugPrice]:

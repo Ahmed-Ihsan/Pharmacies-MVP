@@ -51,3 +51,45 @@ class RouteOfAdministration(str, Enum):
     OPHTHALMIC = "ophthalmic"
     OTIC = "otic"
     NASAL = "nasal"
+
+
+class InventoryStatus(str, Enum):
+    AVAILABLE = "available"
+    LOW_STOCK = "low_stock"
+    OUT_OF_STOCK = "out_of_stock"
+    EXPIRED = "expired"
+    EXPIRING_SOON = "expiring_soon"
+
+
+class MovementType(str, Enum):
+    ADD = "add"
+    REMOVE = "remove"
+    SALE = "sale"
+    DAMAGE = "damage"
+    ADJUSTMENT = "adjustment"
+
+
+class AlertType(str, Enum):
+    LOW_STOCK = "low_stock"
+    OUT_OF_STOCK = "out_of_stock"
+    EXPIRING_SOON = "expiring_soon"
+    EXPIRED = "expired"
+
+
+class PaymentMethod(str, Enum):
+    CASH = "cash"
+    CARD = "card"
+    TRANSFER = "transfer"
+    CREDIT = "credit"
+
+
+class SaleStatus(str, Enum):
+    PENDING = "pending"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+    REFUNDED = "refunded"
+
+
+class DiscountType(str, Enum):
+    PERCENTAGE = "percentage"
+    AMOUNT = "amount"

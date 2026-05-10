@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Eye, Edit2, Trash2, Building2, Factory, Search, MapPin, Globe, AlertTriangle, Download, Filter, Save, X, Loader2 } from 'lucide-react';
+import { Plus, Eye, Edit2, Trash2, Building2, Factory, Search, MapPin, Globe, AlertTriangle, Download, Filter, Save, X, Loader2, Building, FileText, CheckCircle2, ChevronDown } from 'lucide-react';
 import { manufacturerService } from '../../services/manufacturerService';
 import SearchBar from '../../components/common/SearchBar';
 import Button from '../../components/common/Button';
@@ -16,6 +16,19 @@ import { exportToCSV } from '../../utils/exportUtils';
 import { TRANSLATIONS, DEFAULT_PAGE_SIZE } from '../../utils/constants';
 import type { PaginatedResponse } from '../../types/common';
 import type { Manufacturer } from '../../types/manufacturer';
+
+const COUNTRIES = [
+  'IQ', 'SA', 'AE', 'EG', 'JO', 'KW', 'LB',
+  'DE', 'FR', 'US', 'GB', 'IN',
+  'CN', 'TR', 'IR', 'PK', 'OTHER',
+];
+
+const COUNTRY_LABELS: Record<string, string> = {
+  IQ: 'العراق', SA: 'السعودية', AE: 'الإمارات', EG: 'مصر', JO: 'الأردن',
+  KW: 'الكويت', LB: 'لبنان', DE: 'ألمانيا', FR: 'فرنسا', US: 'الولايات المتحدة',
+  GB: 'المملكة المتحدة', IN: 'الهند', CN: 'الصين', TR: 'تركيا',
+  IR: 'إيران', PK: 'باكستان', OTHER: 'أخرى',
+};
 
 export default function ManufacturerList() {
   const navigate = useNavigate();
@@ -253,47 +266,82 @@ export default function ManufacturerList() {
               handleEditSubmit(formData);
             }} className="space-y-4 py-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[hsl(var(--foreground))]">اسم الشركة</label>
-                <input
-                  name="manufacturer_name"
-                  defaultValue={manufacturerToEdit.manufacturer_name}
-                  className="input-luxury w-full"
-                  required
-                />
+                <label className="flex items-center gap-2 text-xs font-semibold tracking-wide uppercase text-[hsl(var(--text-secondary))]">
+                  <span className="text-[hsl(var(--primary))]"><Building className="h-4 w-4" /></span>
+                  اسم الشركة
+                  <span className="text-red-500 ml-1">*</span>
+                </label>
+                <div className="relative group">
+                  <input
+                    name="manufacturer_name"
+                    defaultValue={manufacturerToEdit.manufacturer_name}
+                    className="w-full h-12 px-4 pr-12 rounded-xl bg-[hsl(var(--bg-elevated))] border-2 border-[hsl(var(--border))] text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))]/40 focus:outline-none focus:border-[hsl(var(--primary))] focus:ring-4 focus:ring-[hsl(var(--primary)/0.1)] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-sm font-medium group-hover:border-[hsl(var(--border-glow))] group-hover:shadow-lg"
+                    required
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[hsl(var(--primary))]">
+                    <Building className="h-4 w-4" />
+                  </div>
+                </div>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[hsl(var(--foreground))]">رقم الترخيص</label>
-                <input
-                  name="license_number"
-                  defaultValue={(manufacturerToEdit as any).license_number || ''}
-                  className="input-luxury w-full"
-                />
+                <label className="flex items-center gap-2 text-xs font-semibold tracking-wide uppercase text-[hsl(var(--text-secondary))]">
+                  <span className="text-[hsl(var(--primary))]"><FileText className="h-4 w-4" /></span>
+                  رقم الترخيص
+                </label>
+                <div className="relative group">
+                  <input
+                    name="license_number"
+                    defaultValue={(manufacturerToEdit as any).license_number || ''}
+                    className="w-full h-12 px-4 pr-12 rounded-xl bg-[hsl(var(--bg-elevated))] border-2 border-[hsl(var(--border))] text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))]/40 focus:outline-none focus:border-[hsl(var(--primary))] focus:ring-4 focus:ring-[hsl(var(--primary)/0.1)] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-sm font-medium group-hover:border-[hsl(var(--border-glow))] group-hover:shadow-lg"
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[hsl(var(--primary))]">
+                    <FileText className="h-4 w-4" />
+                  </div>
+                </div>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[hsl(var(--foreground))]">الدولة</label>
-                <select
-                  name="country_code"
-                  defaultValue={manufacturerToEdit.country_code || ''}
-                  className="input-luxury w-full"
-                >
-                  <option value="">-- اختر الدولة --</option>
-                  <option value="IQ">العراق</option>
-                  <option value="SA">السعودية</option>
-                  <option value="AE">الإمارات</option>
-                  <option value="EG">مصر</option>
-                  <option value="JO">الأردن</option>
-                </select>
+                <label className="flex items-center gap-2 text-xs font-semibold tracking-wide uppercase text-[hsl(var(--text-secondary))]">
+                  <span className="text-[hsl(var(--primary))]"><Globe className="h-4 w-4" /></span>
+                  الدولة
+                </label>
+                <div className="relative group">
+                  <select
+                    name="country_code"
+                    defaultValue={manufacturerToEdit.country_code || ''}
+                    className="w-full h-12 px-4 pr-12 rounded-xl bg-[hsl(var(--bg-elevated))] border-2 border-[hsl(var(--border))] text-[hsl(var(--text-primary))] focus:outline-none focus:border-[hsl(var(--primary))] focus:ring-4 focus:ring-[hsl(var(--primary)/0.1)] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-sm font-medium appearance-none cursor-pointer group-hover:border-[hsl(var(--border-glow))] group-hover:shadow-lg"
+                  >
+                    <option value="">-- اختر الدولة --</option>
+                    {COUNTRIES.map((c) => <option key={c} value={c}>{COUNTRY_LABELS[c] || c}</option>)}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[hsl(var(--primary))]">
+                    <Globe className="h-4 w-4" />
+                  </div>
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[hsl(var(--text-secondary))]/40 pointer-events-none">
+                    <ChevronDown className="h-4 w-4" />
+                  </div>
+                </div>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[hsl(var(--foreground))]">الحالة</label>
-                <select
-                  name="status"
-                  defaultValue={manufacturerToEdit.status || 'active'}
-                  className="input-luxury w-full"
-                >
-                  <option value="active">نشط</option>
-                  <option value="suspended">غير نشط</option>
-                </select>
+                <label className="flex items-center gap-2 text-xs font-semibold tracking-wide uppercase text-[hsl(var(--text-secondary))]">
+                  <span className="text-[hsl(var(--primary))]"><CheckCircle2 className="h-4 w-4" /></span>
+                  الحالة
+                </label>
+                <div className="relative group">
+                  <select
+                    name="status"
+                    defaultValue={manufacturerToEdit.status || 'active'}
+                    className="w-full h-12 px-4 pr-12 rounded-xl bg-[hsl(var(--bg-elevated))] border-2 border-[hsl(var(--border))] text-[hsl(var(--text-primary))] focus:outline-none focus:border-[hsl(var(--primary))] focus:ring-4 focus:ring-[hsl(var(--primary)/0.1)] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-sm font-medium appearance-none cursor-pointer group-hover:border-[hsl(var(--border-glow))] group-hover:shadow-lg"
+                  >
+                    <option value="active">نشط</option>
+                    <option value="suspended">غير نشط</option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[hsl(var(--primary))]">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </div>
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[hsl(var(--text-secondary))]/40 pointer-events-none">
+                    <ChevronDown className="h-4 w-4" />
+                  </div>
+                </div>
               </div>
             </form>
           ) : null}

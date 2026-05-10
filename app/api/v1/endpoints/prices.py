@@ -18,6 +18,19 @@ from app.core.exceptions import NotFoundException
 router = APIRouter()
 
 
+@router.get("/", response_model=PaginatedResponse[DrugPriceWithBrand])
+def list_prices(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """List all price entries with pagination."""
+    items = price_service.get_multi(db, skip=skip, limit=limit)
+    total = price_service.repo.get_count(db)
+    return PaginatedResponse(
+        total=total,
+        items=[DrugPriceWithBrand.model_validate(item) for item in items],
+        skip=skip,
+        limit=limit,
+    )
+
+
 @router.get("/by-brand/{brand_id}", response_model=PaginatedResponse[DrugPriceResponse])
 def list_prices_by_brand(
     brand_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)

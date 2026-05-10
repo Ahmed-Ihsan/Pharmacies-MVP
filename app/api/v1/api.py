@@ -8,6 +8,8 @@ from app.api.v1.endpoints import (
     brands,
     alternatives,
     prices,
+    inventory,
+    sales,
 )
 
 api_router = APIRouter()
@@ -52,4 +54,16 @@ api_router.include_router(
     prices.router,
     prefix="/prices",
     tags=["prices"]
+)
+
+api_router.include_router(
+    inventory.router,
+    prefix="/inventory",
+    tags=["inventory"]
+)
+
+api_router.include_router(
+    sales.router,
+    prefix="/sales",
+    tags=["sales"]
 )
