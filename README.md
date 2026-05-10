@@ -19,12 +19,23 @@ A professional pharmacy management backend built with FastAPI and SQLAlchemy, fe
 
 ## Technology Stack
 
+### Backend
 - **Framework**: FastAPI (Python 3.10+)
 - **Database**: SQLite (configured for easy development)
 - **ORM**: SQLAlchemy 2.0 with declarative models
 - **Migrations**: Alembic
 - **Validation**: Pydantic v2
 - **Architecture**: Repository + Service Layer pattern
+
+### Frontend
+- **Framework**: React 19 + TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS v3
+- **UI Components**: shadcn/ui
+- **HTTP Client**: Axios
+- **State Management**: React Context API
+- **Routing**: React Router
+- **Icons**: Lucide React
 
 ## Project Structure
 
@@ -47,12 +58,39 @@ cydl/
 │   ├── repositories/       # Data access layer
 │   ├── services/           # Business logic layer
 │   └── main.py             # FastAPI application entry
+├── frontend/
+│   ├── src/
+│   │   ├── components/     # React components
+│   │   │   ├── common/     # Shared components
+│   │   │   ├── forms/      # Form components
+│   │   │   ├── layout/     # Layout components
+│   │   │   ├── ui/         # UI components (shadcn/ui)
+│   │   │   └── wizards/    # Multi-step wizards
+│   │   ├── pages/          # Page components
+│   │   │   ├── generics/   # Generic drugs pages
+│   │   │   ├── brands/     # Brand names pages
+│   │   │   ├── manufacturers/ # Manufacturers pages
+│   │   │   ├── therapeutic-classes/ # Therapeutic classes pages
+│   │   │   ├── dosage-forms/ # Dosage forms pages
+│   │   │   ├── inventory/  # Inventory management pages
+│   │   │   ├── pos/        # Point of sale pages
+│   │   │   ├── sales/      # Sales management pages
+│   │   │   └── prices/     # Pricing pages
+│   │   ├── services/       # API service modules
+│   │   ├── types/          # TypeScript type definitions
+│   │   ├── utils/          # Utility functions
+│   │   ├── context/        # React context providers
+│   │   └── hooks/          # Custom React hooks
+│   ├── public/             # Static assets
+│   ├── package.json        # Node dependencies
+│   └── vite.config.ts      # Vite configuration
 ├── scripts/                # Utility scripts
 │   ├── init_database.py    # Create database tables
 │   └── seed_data.py        # Load sample data
 ├── data/                   # SQLite database file
 ├── alembic/                # Database migrations
 ├── requirements.txt        # Python dependencies
+├── docker-compose.yml      # Docker orchestration
 └── README.md               # This file
 ```
 
@@ -256,6 +294,15 @@ For complete API documentation with all endpoints, request/response schemas, and
 | **Alternatives** | `GET /api/v1/alternatives` |
 | **Prices** | `GET /api/v1/prices/by-brand/{brand_id}` |
 | | `GET /api/v1/prices/active/{brand_id}` |
+| **Inventory** | `GET /api/v1/inventory` (list, search) |
+| | `POST /api/v1/inventory` (create) |
+| | `GET /api/v1/inventory/{id}` (get) |
+| | `PUT /api/v1/inventory/{id}` (update) |
+| | `DELETE /api/v1/inventory/{id}` (delete) |
+| **Sales** | `GET /api/v1/sales` (list) |
+| | `POST /api/v1/sales` (create) |
+| | `GET /api/v1/sales/{id}` (get) |
+| | `GET /api/v1/sales/{id}/returns` (returns) |
 
 ## Database Schema
 
@@ -268,6 +315,8 @@ For complete API documentation with all endpoints, request/response schemas, and
 5. **brand_names** - Commercial drug products
 6. **generic_alternatives** - Links bioequivalent drugs
 7. **drug_prices** - Price history
+8. **inventory** - Drug inventory levels and movements
+9. **sales** - Sales transactions and records
 
 ### Relationships
 
