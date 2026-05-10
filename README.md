@@ -12,6 +12,10 @@ A professional pharmacy management backend built with FastAPI and SQLAlchemy, fe
 - **Pricing System**: Track acquisition and selling prices with history
 - **Barcode/NDC Support**: Lookup by NDC number or barcode
 - **RESTful API**: Full CRUD operations with search and filtering
+- **Inventory Management**: Track drug inventory levels and movements
+- **Point of Sale (POS)**: Sales management and transaction processing
+- **Professional UI**: Modern, responsive interface with professional form styling
+- **Quick Edit Modals**: Inline editing without leaving the page
 
 ## Technology Stack
 
